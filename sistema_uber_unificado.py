@@ -4,7 +4,6 @@
 sistema_uber_unificado_CONSOLIDADO.py - Sistema monolitico Uber Daimon + GPS Symbiosis
 Version consolidada con todas las modificaciones y fixes aplicados.
 Compatible con Termux/Android. Python >= 3.10
-PARCHE AUTO-REPARACIÓN v3.1: Persistencia de aprendizaje y RL, aprendizaje continuo mejorado.
 """
 # ================================================================================
 # SECCION 0: INTEGRACION DEL PUENTE UBER BRIDGE
@@ -2286,6 +2285,9 @@ class TermuxGPS(GPSProvider):
 
 def create_gps_provider(use_real: bool = True,
                         fallback_to_sim: bool = False) -> GPSProvider:
+    # Si no estamos en Termux, siempre usamos simulación
+    if not IS_TERMUX:
+        return SimulatedGPS()
     if use_real:
         return TermuxGPS()
     return SimulatedGPS()
@@ -2473,45 +2475,9 @@ class GPSCore:
             'wifi': self._force_wifi_learning()
         }
 
-    # ===== PATCH: Métodos de persistencia para datos aprendidos =====
-    def save_learned_data(self, filepath: str) -> None:
-        """Guarda los datos aprendidos (beacons, WiFi, torres) en un archivo JSON."""
-        data = {
-            'beacons': self.bluetooth.known_beacons,
-            'wifi_networks': self.wifi.known_networks,
-            'cell_towers': self.cellular.known_towers,
-            'timestamp': time.time()
-        }
-        try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, default=str)
-            log.info(f"Datos de aprendizaje guardados en {filepath}")
-        except Exception as e:
-            log.error(f"Error guardando datos de aprendizaje: {e}")
-
-    def load_learned_data(self, filepath: str) -> None:
-        """Carga los datos aprendidos desde un archivo JSON."""
-        if not os.path.exists(filepath):
-            log.warning(f"Archivo de aprendizaje no encontrado: {filepath}")
-            return
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            self.bluetooth.known_beacons = data.get('beacons', {})
-            self.wifi.known_networks = data.get('wifi_networks', {})
-            self.cellular.known_towers = data.get('cell_towers', {})
-            # Actualizar contadores estadísticos
-            self.stats['beacons_learned'] = len(self.bluetooth.known_beacons)
-            self.stats['wifi_learned'] = len(self.wifi.known_networks)
-            self.stats['towers_learned'] = len(self.cellular.known_towers)
-            log.info(f"Datos de aprendizaje cargados desde {filepath}")
-        except Exception as e:
-            log.error(f"Error cargando datos de aprendizaje: {e}")
-    # ===== FIN PATCH =====
-
     def _update_loop(self) -> None:
         learning_counter = 0
-        learning_interval = 30  # segundos entre ciclos de aprendizaje
+        learning_interval = 30
         while not self._stop_event.is_set():
             dt = self._calculate_dt()
             if self.kalman:
@@ -2577,16 +2543,11 @@ class GPSCore:
                     self.stats['cellular_updates'] += 1
             except Exception:
                 pass
-            # ===== PATCH: Aprendizaje continuo incluso sin GPS de alta calidad =====
             learning_counter += 1
-            if learning_counter >= learning_interval and self._last_coord is not None:
-                resultados = self._force_all_learning()
-                total_aprendidos = sum(resultados.values())
-                if total_aprendidos > 0:
-                    log.info(f"APRENDIZAJE: +{total_aprendidos} nuevas fuentes "
-                             f"(BT:{resultados['bluetooth']}, CELL:{resultados['cellular']}, WiFi:{resultados['wifi']})")
+            if learning_counter >= learning_interval and self._is_gps_quality_valid():
+                if self._last_coord:
+                    self._force_all_learning()
                 learning_counter = 0
-            # ===== FIN PATCH =====
             if not locations:
                 self.consecutive_failures += 1
                 if self._last_coord and self.consecutive_failures < MAX_CONSECUTIVE_FAILURES:
@@ -3583,41 +3544,6 @@ class EnsembleRL:
         for i, name in enumerate(self.algorithms):
             self.weights[name] = float(new_weights[i])
 
-    # ===== PATCH: Métodos save/load =====
-    def save(self, filepath: str) -> None:
-        """Guarda el estado completo del ensemble (pesos, rendimiento, paso y algoritmos)."""
-        import pickle
-        try:
-            with open(filepath, 'wb') as f:
-                pickle.dump({
-                    'weights': self.weights,
-                    'perf': self.perf,
-                    'step': self.step,
-                    'algorithms': self.algorithms   # todos son pickeables
-                }, f)
-            log.info(f"Modelo RL guardado en {filepath}")
-        except Exception as e:
-            log.error(f"Error guardando modelo RL: {e}")
-
-    def load(self, filepath: str) -> None:
-        """Carga el estado del ensemble desde un archivo."""
-        import pickle
-        if not os.path.exists(filepath):
-            log.warning(f"Archivo RL no encontrado: {filepath}")
-            return
-        try:
-            with open(filepath, 'rb') as f:
-                data = pickle.load(f)
-            self.weights = data['weights']
-            self.perf = data['perf']
-            self.step = data['step']
-            # Restaurar los algoritmos internos (ya inicializados en __init__)
-            self.algorithms = data['algorithms']
-            log.info(f"Modelo RL cargado desde {filepath}")
-        except Exception as e:
-            log.error(f"Error cargando modelo RL: {e}")
-    # ===== FIN PATCH =====
-
     def update(self, state: Any, action: int, reward: float,
                next_state: Any, done: bool) -> Dict:
         total_reward = float(reward)
@@ -4132,53 +4058,27 @@ class SymbiosisGPS:
         if not self.persist_dir.exists():
             self.persist_dir.mkdir(parents=True, exist_ok=True)
 
-    # ===== PATCH: Guardado y carga completos =====
-    def _save_all(self) -> None:
-        self._ensure_persist_dir()
-        # Guardar geofences
-        try:
-            geofence_file = self.persist_dir / "geofences.json"
-            self.gps.geofence.save(str(geofence_file))
-        except Exception as e:
-            log.error(f"Error guardando geofences: {e}")
-        # Guardar datos aprendidos
-        try:
-            learned_file = self.persist_dir / "learned_data.json"
-            self.gps.save_learned_data(str(learned_file))
-        except Exception as e:
-            log.error(f"Error guardando datos aprendidos: {e}")
-        # Guardar modelo RL
-        if self.rl:
-            try:
-                rl_file = self.persist_dir / "ensemble_rl.pkl"
-                self.rl.save(str(rl_file))
-            except Exception as e:
-                log.error(f"Error guardando modelo RL: {e}")
-
     def _load_all(self) -> None:
-        # Cargar geofences
         geofence_file = self.persist_dir / "geofences.json"
         if geofence_file.exists():
             try:
                 self.gps.geofence.load(str(geofence_file))
-            except Exception as e:
-                log.error(f"Error cargando geofences: {e}")
-        # Cargar datos aprendidos
-        learned_file = self.persist_dir / "learned_data.json"
-        if learned_file.exists():
-            try:
-                self.gps.load_learned_data(str(learned_file))
-            except Exception as e:
-                log.error(f"Error cargando datos aprendidos: {e}")
-        # Cargar modelo RL (si ya está inicializado)
+            except Exception:
+                pass
+
+    def _save_all(self) -> None:
+        self._ensure_persist_dir()
+        try:
+            geofence_file = self.persist_dir / "geofences.json"
+            self.gps.geofence.save(str(geofence_file))
+        except Exception:
+            pass
         if self.rl:
-            rl_file = self.persist_dir / "ensemble_rl.pkl"
-            if rl_file.exists():
-                try:
-                    self.rl.load(str(rl_file))
-                except Exception as e:
-                    log.error(f"Error cargando modelo RL: {e}")
-    # ===== FIN PATCH =====
+            try:
+                rl_file = self.persist_dir / "ensemble_rl.pkl"
+                self.rl.save(str(rl_file))
+            except Exception:
+                pass
 
     def get_location(self) -> Optional[Coordinate]:
         return self.gps.get_location()
@@ -4227,7 +4127,6 @@ class SymbiosisGPS:
     def init_rl(self, state_dim: int, action_dim: int) -> None:
         self.rl = EnsembleRL(state_dim, action_dim, use_curiosity=True,
                               use_episodic=True, use_meta=True)
-        # Cargar modelo si existe (desde _load_all ya se hizo, pero lo repetimos por si acaso)
         rl_file = self.persist_dir / "ensemble_rl.pkl"
         if rl_file.exists() and rl_file.stat().st_size > 0:
             try:
@@ -4872,8 +4771,7 @@ def procesar_datos_mapa_con_gps(datos_mapa: Dict[str, Any], usuario_id: str) -> 
 # ================================================================================
 
 if HAS_FLASK:
-    app = Flask(__name__)
-    HTTP_PORT = encontrar_puerto_libre()
+    HTTP_PORT = int(os.getenv('PORT', 8080))
 
     try:
         from flask_cors import CORS
@@ -5434,7 +5332,7 @@ def iniciar_frontend_hilo_seguro():
 
 def ejecutar_modo_continuo() -> None:
     print("\n" + "=" * 70)
-    print(" SISTEMA GPS SYMBIOSIS ULTRA v3.1 - MODO CONTINUO (PARCHE APLICADO)")
+    print(" SISTEMA GPS SYMBIOSIS ULTRA v3.0 - MODO CONTINUO")
     print("=" * 70)
     print("  Modulos activos:")
     print("  - GPS con EKF mejorado")
@@ -5447,7 +5345,7 @@ def ejecutar_modo_continuo() -> None:
     print("  - Enrutamiento (Dijkstra/A*)")
     print("  - RL Ensemble (DQN/SARSA/AC/PPO)")
     print("  - Fuzzy Logic")
-    print("  - Auto-aprendizaje de Beacons, Torres y WiFi (PERSISTENTE)")
+    print("  - Auto-aprendizaje de Beacons, Torres y WiFi")
     print("  - Uber Bridge (sensores nativos Android)")
     print("=" * 70)
     print("  Presiona Ctrl+C para detener")
@@ -5469,7 +5367,7 @@ def ejecutar_modo_continuo() -> None:
         except Exception as e:
             log.warning("Error en integracion Uber Bridge: {}".format(e))
 
-    print("\n[+] Auto-aprendizaje activado (persistente):")
+    print("\n[+] Auto-aprendizaje activado:")
     print("  - Bluetooth: ACTIVADO")
     print("  - Celular: ACTIVADO")
     print("  - WiFi: ACTIVADO")
@@ -5507,7 +5405,7 @@ def ejecutar_modo_continuo() -> None:
         print("\n[!] Sin fijacion GPS tras 60s. Continuando en modo simulado...")
 
     print("\n" + "=" * 70)
-    print(" SISTEMA ACTIVO - MONITOREANDO UBICACION Y APRENDIENDO (PERSISTENCIA ACTIVA)")
+    print(" SISTEMA ACTIVO - MONITOREANDO UBICACION Y APRENDIENDO")
     print("=" * 70)
 
     cycle_count = 0
@@ -5516,7 +5414,7 @@ def ejecutar_modo_continuo() -> None:
     last_location = None
     update_interval = 1.0
     log_interval = 20
-    learning_interval = 30  # cada 30 segundos (ya definido en GPSCore)
+    learning_interval = 60
     last_learning_time = start_time
     running = True
 
@@ -5562,11 +5460,16 @@ def ejecutar_modo_continuo() -> None:
 
             now = time.time()
 
-            # El aprendizaje ya se maneja dentro de GPSCore, pero podemos forzar
-            # un guardado periódico de los datos aprendidos
             if now - last_learning_time >= learning_interval:
-                if hasattr(symb, '_save_all'):
-                    symb._save_all()
+                if hasattr(symb.gps, 'force_learning'):
+                    results = symb.gps.force_learning()
+                    total_learned = sum(results.values())
+                    if total_learned > 0:
+                        print("  [APRENDIZAJE] +{} nuevas fuentes (BT:{}, CELL:{}, WiFi:{})".format(
+                            total_learned,
+                            results.get('bluetooth', 0),
+                            results.get('cellular', 0),
+                            results.get('wifi', 0)))
                 last_learning_time = now
 
             if now - last_log_time >= log_interval:
@@ -5642,14 +5545,14 @@ def ejecutar_modo_continuo() -> None:
         print("  Estaciones DGPS: {}".format(
             learning_stats.get('dgps', {}).get('stations', 0)))
         symb.shutdown()
-        print("\n[+] Sistema apagado correctamente. Los datos han sido guardados.")
+        print("\n[+] Sistema apagado correctamente.")
         print("=" * 70)
 
 
 def mostrar_ayuda() -> None:
     print("""
 ======================================================================
-                GPS SYMBIOSIS ULTRA - AYUDA (v3.1 con persistencia)
+                GPS SYMBIOSIS ULTRA - AYUDA
 ======================================================================
 
   COMANDOS DISPONIBLES:
@@ -5661,11 +5564,10 @@ def mostrar_ayuda() -> None:
      Accede a: http://localhost:8080/puente
      Accede a: http://localhost:8080/mining_demo
 
-  3. Auto-aprendizaje automatico Y PERSISTENTE
+  3. Auto-aprendizaje automatico
      - Bluetooth: Escanea y aprende beacons cercanos
      - Celular: Aprende torres LTE/GSM
      - WiFi: Aprende redes WiFi cercanas
-     - Los datos se guardan en: ./gps_symbiosis_data/user_*/learned_data.json
 
   4. Uber Bridge (sensores nativos Android)
      Si UberBridgeService.java esta corriendo en el puerto
@@ -5673,13 +5575,11 @@ def mostrar_ayuda() -> None:
      nativos de Android. Fallback automatico a termux-api.
 
   5. Persistencia de datos
-     - Datos aprendidos: learned_data.json
-     - Geocercas: geofences.json
-     - Modelo RL: ensemble_rl.pkl
-     Todo se guarda automáticamente al cerrar.
+     Los datos aprendidos se guardan en:
+     ./gps_learned_data.json
 
   6. Teclas durante ejecucion:
-     Ctrl+C  - Detener el sistema (guarda datos automáticamente)
+     Ctrl+C  - Detener el sistema
 
 ======================================================================
 """)
@@ -5687,7 +5587,7 @@ def mostrar_ayuda() -> None:
 
 if __name__ == "__main__":
     print("=" * 70, flush=True)
-    print("UBER DAIMON VIVO + SOCIALCOIN + GPS SYMBIOSIS (UNIFICADO) v3.1 - PARCHE PERSISTENCIA", flush=True)
+    print("UBER DAIMON VIVO + SOCIALCOIN + GPS SYMBIOSIS (UNIFICADO) v3.0", flush=True)
     print("=" * 70, flush=True)
     if HAS_FLASK:
         print("Puerto Flask: {}".format(HTTP_PORT), flush=True)
@@ -5695,8 +5595,8 @@ if __name__ == "__main__":
         print("Mining Demo: http://localhost:{}/mining_demo".format(HTTP_PORT), flush=True)
     else:
         print("Flask NO disponible. Solo modo CLI activo.", flush=True)
-    print("Auto-aprendizaje: ACTIVADO Y PERSISTENTE (Beacons, Torres, WiFi)", flush=True)
-    print("Persistencia de datos: ACTIVADA (learned_data.json, geofences.json, ensemble_rl.pkl)", flush=True)
+    print("Auto-aprendizaje: ACTIVADO (Beacons, Torres, WiFi)", flush=True)
+    print("Persistencia de datos: ACTIVADA (gps_learned_data.json)", flush=True)
     if UBER_BRIDGE_AVAILABLE:
         print("Uber Bridge: DETECTADO (sensores nativos Android disponibles)", flush=True)
     else:
