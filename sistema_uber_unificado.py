@@ -1,3 +1,4 @@
+echo "# FIX_RENDER_2026" >> sistema_uber_unificado.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -5639,3 +5640,4 @@ if __name__ == "__main__":
 
     mostrar_ayuda()
     ejecutar_modo_continuo()
+    
