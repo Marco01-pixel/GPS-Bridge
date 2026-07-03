@@ -1,8 +1,7 @@
-echo "# FORCE_RENDER_DEPLOY" >> sistema_uber_unificado.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-sistema_uber_unificado_CONSOLIDADO.py - Sistema monolitico Uber Daimon + GPS Symbiosis
+sistema_uber_unificado.py - Sistema monolitico Uber Daimon + GPS Symbiosis
 Version consolidada con todas las modificaciones y fixes aplicados.
 Compatible con Termux/Android. Python >= 3.10
 """
