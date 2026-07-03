@@ -77,28 +77,9 @@
         .bt-panel .device .name{color:#4d94ff}
         .bt-panel .device .mac{color:#88a}
         .bt-panel .close-bt{float:right;background:transparent;border:none;color:#ff4466;font-size:14px;cursor:pointer}
-        .costs-modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);z-index:3000;display:none;justify-content:center;align-items:center;padding:10px}
-        .costs-modal-overlay.show{display:flex}
-        .costs-modal{background:#1a2733;border-radius:16px;border:1px solid #2a3a4a;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:20px}
-        .costs-modal h2{font-size:20px;color:#00d4aa;margin-bottom:15px;text-align:center}
-        .costs-modal .close-btn{background:transparent;border:none;color:#fff;font-size:24px;cursor:pointer;float:right}
-        .costs-modal .card{background:#0f1923;border-radius:12px;padding:15px;margin-bottom:12px;border:1px solid #2a3a4a}
-        .costs-modal .card-title{font-size:14px;font-weight:700;margin-bottom:10px;color:#00d4aa}
-        .costs-modal .form-row{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap}
-        .costs-modal .form-group{flex:1;min-width:100px}
-        .costs-modal label{display:block;font-size:10px;color:#8899aa;margin-bottom:3px;font-weight:600;text-transform:uppercase}
-        .costs-modal input,.costs-modal select{width:100%;padding:8px 10px;background:#0a0f14;border:1px solid #2a3a4a;border-radius:8px;color:white;font-size:13px}
-        .costs-modal .odometer-container{background:#000;border-radius:12px;padding:15px;text-align:center;border:2px solid #00d4aa;margin-bottom:12px}
-        .costs-modal .odometer{font-size:40px;font-weight:900;font-family:'Courier New',monospace;color:#00d4aa}
-        .costs-modal .result-card{background:linear-gradient(135deg,#1a2733,#0f1923);border:2px solid #00d4aa;border-radius:16px;padding:20px;text-align:center;margin-top:15px}
-        .costs-modal .result-amount{font-size:42px;font-weight:900;color:#00d4aa}
-        .costs-modal .breakdown-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-        .costs-modal .breakdown-item{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;font-size:11px;text-align:center}
-        .costs-modal .breakdown-item .amount{font-size:16px;font-weight:700;display:block}
-        .costs-modal .savings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-        .costs-modal .savings-item{background:#0f1923;padding:10px;border-radius:8px;text-align:center;border:1px solid #2a3a4a}
-        .costs-modal .savings-item .amount{font-size:18px;font-weight:700;color:#00d4aa}
+        /* ----- Eliminado todo lo de costos (modal, estilos) ----- */
         #radarCanvas{position:absolute;bottom:20px;right:20px;width:200px;height:200px;z-index:100;border-radius:50%;border:2px solid rgba(77,148,255,0.5);background:rgba(0,0,0,0.7);pointer-events:none;display:block}
+        .radar-text{text-align:center;font-size:9px;color:#4d94ff;padding:2px 0;font-family:monospace;border-top:1px solid rgba(77,148,255,0.08)}
     </style>
 </head>
 <body>
@@ -128,14 +109,21 @@
     <div class="details-section" id="detailsSection">
         <div class="detail-row"><span class="dl">GPS</span><span class="dv" id="gpsCoords">Esperando...</span></div>
         <div class="detail-row"><span class="dl">Multiplicador</span><span class="dv" id="multiplierValue">1.00x</span></div>
-        <div class="detail-row"><span class="dl">Red</span><span class="dv" id="netStatus"><span class="net-dot net-offline"></span>--</span></div>
-        <div class="detail-row"><span class="dl">Servidor</span><span class="dv" id="winner">-</span></div>
-        <div class="detail-row"><span class="dl">Latencia</span><span class="dv" id="latency">-</span></div>
+        <!-- NUEVAS ETIQUETAS TECNICAS (reemplazando Red, Servidor, Latencia, Zona, RL Decision, Demanda, Costos) -->
+        <div class="detail-row"><span class="dl">Kalman</span><span class="dv" id="kalmanValue">--%</span></div>
+        <div class="detail-row"><span class="dl">DGPS</span><span class="dv" id="dgpsValue">--</span></div>
+        <div class="detail-row"><span class="dl">Uptime</span><span class="dv" id="uptimeValue">--min</span></div>
+        <div class="detail-row"><span class="dl">Ciclos</span><span class="dv" id="ciclosValue">--</span></div>
+        <div class="detail-row"><span class="dl">GPS Act.</span><span class="dv" id="gpsUpdates">--</span></div>
+        <div class="detail-row"><span class="dl">Torres</span><span class="dv" id="torresValue">--</span></div>
+        <div class="detail-row"><span class="dl">WiFi</span><span class="dv" id="wifiValue">--</span></div>
+        <div class="detail-row"><span class="dl">Distancia</span><span class="dv" id="distanciaValue">--m</span></div>
         <div class="detail-row"><span class="dl">Singularidad</span><span class="dv" id="singularityStatus">Cargando...</span></div>
         <div class="detail-row"><span class="dl">Zona</span><span class="dv" id="zonaInfo">--</span></div>
         <div class="detail-row"><span class="dl">RL Decision</span><span class="dv" id="rlDecision">--</span></div>
         <div class="detail-row"><span class="dl">Demanda</span><span class="dv" id="demandPred">--</span></div>
-        <div class="detail-row" style="justify-content:center;padding-top:6px;"><button onclick="toggleCostsModal()" style="background:rgba(0,212,170,0.2);color:#00d4aa;border:1px dashed #00d4aa;padding:4px 12px;border-radius:12px;font-size:10px;cursor:pointer;">Costos</button></div>
+        <!-- LINEA DE RADAR WIFI (texto) -->
+        <div class="radar-text" id="radarText">RADAR: N:--% NE:--% E:--% SE:--% S:--% SW:--% W:--% NW:--%</div>
     </div>
     <div id="proIndicator" class="pro-indicator"><span class="pro-badge">MODO PRO ACTIVADO</span></div>
 </div>
@@ -149,20 +137,15 @@
 </div>
 <!-- Toast -->
 <div class="toast" id="toast"></div>
-<!-- Modal de Costos -->
-<div class="costs-modal-overlay" id="costsModalOverlay"><div class="costs-modal" id="costsModal"><button class="close-btn" id="closeCostsBtn">X</button><h2>Calculadora de Costos Diarios</h2><div class="odometer-container"><div style="font-size:11px;color:#8899aa;text-transform:uppercase;">Kilometraje Hoy</div><div class="odometer" id="costOdometer">0.00</div></div><div class="card"><div class="card-title">Datos del Vehiculo</div><div class="form-row"><div class="form-group"><label>Cilindrada</label><select id="engineSize"><option value="1.0">1.0-1.3L</option><option value="1.4">1.4-1.6L</option><option value="1.8" selected>1.8-2.0L</option><option value="2.5">2.5L+</option></select></div><div class="form-group"><label>Rendimiento</label><input type="text" id="mileageRange" readonly></div></div><div class="form-row"><div class="form-group"><label>Precio Combustible</label><input type="number" id="fuelPrice" value="1.05" step="0.01"></div><div class="form-group"><label>Unidad</label><select id="fuelUnit"><option value="litro">Litros</option><option value="galon">Galones</option></select></div></div></div><div class="card"><div class="card-title">Ahorro para Proximo Vehiculo</div><p style="font-size:10px;color:#8899aa;margin-bottom:8px;text-align:center;">Aparta este monto cada dia que trabajes</p><div class="form-row"><div class="form-group"><label>Valor Vehiculo ($)</label><input type="number" id="carValue" value="15000"></div><div class="form-group"><label>Años de Financiamiento</label><input type="number" id="usefulLife" value="8" min="1" max="12"></div></div><div style="text-align:center;padding:12px;background:rgba(255,165,2,0.08);border-radius:10px;border:1px solid rgba(255,165,2,0.3);"><div style="font-size:10px;color:#8899aa;text-transform:uppercase;letter-spacing:1px;">Ahorro Diario</div><div style="font-size:32px;font-weight:900;color:#ffa502;" id="dailyDepreciation">$0.00</div></div><div id="totalSavingsGoal" style="text-align:center;font-size:10px;color:#00d4aa;margin-top:8px;">Meta: $15,000.00 en 8 años</div></div><div class="card"><div class="card-title">Gastos Fijos</div><div class="form-row"><div class="form-group"><label>Letra/Préstamo</label><input type="number" id="carPayment" value="0"></div><div class="form-group"><label>Periodo</label><select id="carPaymentPeriod"><option value="monthly">Mensual</option><option value="weekly">Semanal</option><option value="daily">Diario</option><option value="none">No aplica</option></select></div></div><div class="form-row"><div class="form-group"><label>Seguro</label><input type="number" id="insurance" value="0"></div><div class="form-group"><label>Periodo</label><select id="insurancePeriod"><option value="monthly">Mensual</option><option value="yearly">Anual</option><option value="none">No aplica</option></select></div></div><div class="form-row"><div class="form-group"><label>Mantenimiento</label><input type="number" id="maintenance" value="0"></div><div class="form-group"><label>Periodo</label><select id="maintenancePeriod"><option value="monthly">Mensual</option><option value="weekly">Semanal</option><option value="none">No aplica</option></select></div></div></div><div class="card"><div class="card-title">Meta Diario</div><div class="form-row"><div class="form-group"><label>Ganancia deseada/dia</label><input type="number" id="dailyProfit" value="50"></div></div></div><div class="result-card"><div style="font-size:12px;color:#8899aa;">DEBE GENERAR MINIMO POR DIA</div><div class="result-amount" id="totalDaily">$0.00</div><div class="breakdown-grid"><div class="breakdown-item"><span class="amount" id="breakFuel">$0.00</span>Combustible</div><div class="breakdown-item"><span class="amount" id="breakFixed">$0.00</span>Fijos+Ahorro Veh.</div><div class="breakdown-item"><span class="amount" id="breakProfit">$0.00</span>Ganancia</div><div class="breakdown-item"><span class="amount" id="costPerKm">$0.00</span>Costo/km</div></div><div class="savings-grid"><div class="savings-item"><div class="amount" id="saveDaily">$0.00</div>Diario</div><div class="savings-item"><div class="amount" id="saveWeekly">$0.00</div>Semanal</div><div class="savings-item"><div class="amount" id="saveMonthly">$0.00</div>Mensual</div></div></div><button onclick="costsCalculateAll()" style="width:100%;padding:12px;background:#00d4aa;color:#000;border:none;border-radius:10px;font-weight:700;margin-top:10px;cursor:pointer;">Recalcular</button></div></div>
+<!-- ELIMINADO TODO EL MODAL DE COSTOS -->
 
 <script>
 // ============================================================
 // DETECCION AUTOMATICA DEL SERVIDOR
 // ============================================================
 (function() {
-    // Intenta determinar la URL base del servidor
     var serverBase = location.origin;
-    // Si estamos en un puerto diferente al esperado, usa el puerto por defecto
     if (location.port === '') {
-        // Si estamos en el puerto 80 o 443, asumimos que el backend puede estar en otro puerto
-        // En desarrollo, usamos el puerto 8080 por defecto
         serverBase = location.protocol + '//' + location.hostname + ':8080';
     }
     window.SERVER_BASE = serverBase;
@@ -215,6 +198,7 @@ var targetPoints = [
     {lat: 8.88, lon: -79.76, name: 'Arraijan'},
     {lat: 8.875, lon: -79.78, name: 'Chorrera'}
 ];
+var startTime = Date.now();
 
 // ============================================================
 // FUNCIONES AUXILIARES
@@ -225,6 +209,28 @@ function addLog(m,type){type=type||'info';var c=document.getElementById('logCont
 function togglePanel(){panelExpanded=!panelExpanded;var p=document.getElementById('infoPanel');p.classList.toggle('expanded',panelExpanded);p.classList.toggle('compact',!panelExpanded);}
 function playBeep(){try{var a=new(window.AudioContext||window.webkitAudioContext)();var o=a.createOscillator();var g=a.createGain();o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.value=1200;g.gain.value=0.4;o.start();o.stop(a.currentTime+0.18);if(a.state==='suspended')a.resume();}catch(e){}}
 function playRoarWithVoice(){try{var a=new(window.AudioContext||window.webkitAudioContext)();var o1=a.createOscillator();var g1=a.createGain();o1.connect(g1);g1.connect(a.destination);o1.type='sawtooth';o1.frequency.value=55;g1.gain.value=0.35;o1.start();g1.gain.exponentialRampToValueAtTime(0.001,a.currentTime+1.4);o1.stop(a.currentTime+1.4);var o2=a.createOscillator();var g2=a.createGain();o2.connect(g2);g2.connect(a.destination);o2.type='square';o2.frequency.value=75;g2.gain.value=0.15;o2.start();g2.gain.exponentialRampToValueAtTime(0.001,a.currentTime+1.1);o2.stop(a.currentTime+1.1);if(a.state==='suspended')a.resume();}catch(e){}if('speechSynthesis' in window){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance('Protocolo de Mejor Opcion Activado');u.lang='es-ES';u.rate=0.9;u.pitch=1.0;speechSynthesis.speak(u);}}
+
+// ============================================================
+// ACTIVAR SINGULARIDAD OMEGA (nuevo)
+// ============================================================
+function activarSingularidadOmega(){
+    playBeep();
+    addLog('Activando Singularidad Omega...','info');
+    fetch(SERVER_BASE+'/ceoia/singularidad',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({})
+    }).then(function(res){return res.json();}).then(function(data){
+        if(data.mensaje){
+            addLog('OK '+data.mensaje,'pro');
+            document.getElementById('singularityStatus').textContent = 'Activa';
+            showToast('SINGULARIDAD OMEGA ACTIVADA');
+            document.getElementById('proIndicator').classList.add('active');
+        }
+    }).catch(function(err){
+        addLog('Error activando singularidad: '+err.message,'error');
+    });
+}
 
 // ============================================================
 // BLUETOOTH SCAN
@@ -428,7 +434,6 @@ function updatePosition(pos){
     lastUpdateTime=now;
     lastPos={lat:lat,lng:lon,accuracy:acc};
     updateTaximeterUI();
-    costsCalculateAll();
     sendMapaData();
     drawRadar(lat, lon);
 }
@@ -455,7 +460,6 @@ function updateTaximeterUI(){
     document.getElementById('kilometers').textContent=sTF(totalDistance);
     document.getElementById('waitingTime').textContent=Math.round(totalWaiting);
     document.getElementById('speed').textContent=sTF(currentSpeedKmh,1);
-    document.getElementById('costOdometer').textContent=sTF(totalDistance);
     var wi=document.getElementById('waitIndicator');
     var now=Date.now();
     if(stationaryStartTime&&!waitingActive){
@@ -472,63 +476,49 @@ function updateTaximeterUI(){
 }
 
 // ============================================================
-// RED Y SINGULARIDAD
+// OBTENER DATOS TECNICOS DEL SERVIDOR (KALMAN, DGPS, RADAR, ETC.)
 // ============================================================
-function refreshNetwork(){
-    fetch(SERVER_BASE+'/api/v1/network')
-    .then(function(res){if(!res.ok)throw new Error('HTTP '+res.status);return res.json();})
-    .then(function(d){
-        var cls='net-offline', txt='Offline';
-        if(d.status&&d.status.indexOf('EXCELENTE')!==-1){cls='net-excellent';txt='Excelente';}
-        else if(d.status&&d.status.indexOf('ESTABLE')!==-1){cls='net-stable';txt='Estable';}
-        else if(d.status&&d.status.indexOf('SATURADO')!==-1){cls='net-saturated';txt='Saturado';}
-        else if(d.internet_ok){cls='net-stable';txt='Conectado';}
-        document.getElementById('netStatus').innerHTML='<span class="net-dot '+cls+'"></span>'+txt;
-        document.getElementById('winner').textContent=d.ganador||'-';
-        document.getElementById('latency').textContent=d.latencia?sTF(parseFloat(d.latencia)*1000,0)+' ms':'-';
-        if(d.gps_symbiosis_net){
-            document.getElementById('netStatus').innerHTML += ' <span style="font-size:8px;color:#00ff6b;">GPS+</span>';
-        }
-    }).catch(function(){
-        document.getElementById('netStatus').innerHTML='<span class="net-dot net-offline"></span>Error';
-    });
-}
-
-function fetchSingularityStatus(){
-    fetch(SERVER_BASE+'/ceoia/estado')
-    .then(function(res){if(res.ok)return res.json();throw new Error('fail');})
-    .then(function(d){
-        var e=(d.estado_interno&&d.estado_interno.modo_operacion)||'Desconocido';
-        var c=(d.estado_interno&&d.estado_interno.confianza_decisiones)||0;
-        var el=document.getElementById('singularityStatus');
-        el.textContent=e+' ('+Math.round(c*100)+'%)';
-        el.style.color=(e.toUpperCase().indexOf('AUTONOMO')!==-1||c>0.7)?'#ffaa33':'#88a';
-        if(d.gps_symbiosis && d.gps_symbiosis.rl_step){
-            el.textContent += ' | RL:'+d.gps_symbiosis.rl_step;
-        }
-    }).catch(function(){
-        document.getElementById('singularityStatus').textContent='Offline';
-    });
-}
-
 function fetchGPSSymbiosisStatus(){
     fetch(SERVER_BASE+'/api/gps/estado_completo')
-    .then(function(res){if(res.ok)return res.json();throw new Error('fail');})
+    .then(function(res){if(!res.ok) throw new Error('HTTP '+res.status); return res.json();})
     .then(function(d){
         gpsSymbiosisOnline = true;
         var ind = document.getElementById('gpsSymbiosisIndicator');
         if(d.location && d.location.latitude){
-            ind.textContent = 'GPS Symbiosis: ONLINE | RL Step: '+(d.rl?d.rl.step:0)+' | Geocercas: '+d.geofences_stats.total_fences;
+            ind.textContent = 'GPS Symbiosis: ONLINE | RL Step: '+(d.rl?d.rl.step:0);
             ind.className = 'gps-symbiosis-indicator active';
         }
-        if(d.rl && d.rl.weights){
-            var rlEl = document.getElementById('rlDecision');
-            var mejorAlgo = Object.entries(d.rl.weights).reduce(function(a,b){return a[1]>b[1]?a:b;});
-            rlEl.textContent = mejorAlgo[0].toUpperCase()+' ('+(mejorAlgo[1]*100).toFixed(0)+'%)';
+        // Kalman
+        var kalman = d.gps_stats?.kalman_quality || 0;
+        document.getElementById('kalmanValue').textContent = Math.round(kalman * 100) + '%';
+        // DGPS
+        var dgps = d.gps_stats?.dgps_stats?.corrections_applied || 0;
+        document.getElementById('dgpsValue').textContent = dgps;
+        // Uptime
+        var uptime = (Date.now() - startTime) / 60000;
+        document.getElementById('uptimeValue').textContent = uptime.toFixed(1) + 'min';
+        // Ciclos
+        var ciclos = d.gps_stats?.trajectory_points || 0;
+        document.getElementById('ciclosValue').textContent = ciclos;
+        // GPS updates
+        var gpsUpd = d.gps_stats?.gps_updates || 0;
+        document.getElementById('gpsUpdates').textContent = gpsUpd;
+        // Torres
+        var torres = d.gps_stats?.cell_towers_known || 0;
+        document.getElementById('torresValue').textContent = torres;
+        // WiFi
+        var wifi = d.gps_stats?.wifi_networks_known || 0;
+        document.getElementById('wifiValue').textContent = wifi;
+        // Distancia
+        var dist = d.gps_stats?.total_distance_m || 0;
+        document.getElementById('distanciaValue').textContent = dist.toFixed(1) + 'm';
+        // Singularidad
+        if(d.singularidad_activa){
+            document.getElementById('singularityStatus').textContent = 'Activa';
+        } else {
+            document.getElementById('singularityStatus').textContent = 'Inactiva';
         }
-        if(d.demand_predicted !== undefined){
-            document.getElementById('demandPred').textContent = sTF(d.demand_predicted, 2)+'x';
-        }
+        // Zona
         if(d.geofences_stats && d.geofences_stats.fences){
             var zonasActivas = [];
             for(var fid in d.geofences_stats.fences){
@@ -540,44 +530,36 @@ function fetchGPSSymbiosisStatus(){
                 document.getElementById('zonaInfo').textContent = zonasActivas.join(', ');
             }
         }
-    }).catch(function(){
+        // RL Decision
+        if(d.rl && d.rl.weights){
+            var mejorAlgo = Object.entries(d.rl.weights).reduce(function(a,b){return a[1]>b[1]?a:b;});
+            document.getElementById('rlDecision').textContent = mejorAlgo[0].toUpperCase()+' ('+(mejorAlgo[1]*100).toFixed(0)+'%)';
+        }
+        // Demanda
+        if(d.demand_predicted !== undefined){
+            document.getElementById('demandPred').textContent = sTF(d.demand_predicted, 2)+'x';
+        }
+        // Radar WiFi (si existe en la respuesta)
+        if(d.wifi_radar && Array.isArray(d.wifi_radar) && d.wifi_radar.length === 8){
+            var sectores = ['N','NE','E','SE','S','SW','W','NW'];
+            var radarStr = 'RADAR: ';
+            for(var i=0; i<8; i++){
+                radarStr += sectores[i] + ':' + (d.wifi_radar[i] || 0) + '% ';
+            }
+            document.getElementById('radarText').textContent = radarStr.trim();
+        }
+        // Multiplicador
+        if(d.multiplicador){
+            document.getElementById('multiplierValue').textContent = sTF(d.multiplicador, 2) + 'x';
+        }
+        addLog('Datos tecnicos actualizados','info');
+    }).catch(function(err){
         gpsSymbiosisOnline = false;
         var ind = document.getElementById('gpsSymbiosisIndicator');
         ind.textContent = 'GPS Symbiosis: OFFLINE';
         ind.className = 'gps-symbiosis-indicator warning';
+        addLog('Error obteniendo GPS Symbiosis: '+err.message,'error');
     });
-}
-
-// ============================================================
-// MEJOR OPCION (PRO)
-// ============================================================
-function activarMejorOpcion(){
-    var btn = document.getElementById('mejorOpcionBtn');
-    btn.disabled = true;
-    playBeep();
-    addLog('BEEP - Iniciando secuencia...','info');
-    setTimeout(function(){
-        playRoarWithVoice();
-        addLog('RUGIDO + VOZ: Protocolo activado.','info');
-        btn.textContent = 'Activando...';
-        fetch(SERVER_BASE+'/uber/activar_mejor_opcion',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({imprimir_prompt:true})
-        }).then(function(res){return res.json();}).then(function(data){
-            if(data.message){
-                addLog('OK '+data.message,'pro');
-                document.getElementById('proIndicator').classList.add('active');
-                showToast('MODO PRO ACTIVADO');
-                if(data.estado) addLog('Estado: '+data.estado,'info');
-            }
-        }).catch(function(err){
-            addLog('Error: '+err.message,'error');
-        }).finally(function(){
-            btn.disabled=false;
-            btn.innerHTML='MEJOR OPCION';
-        });
-    },2000);
 }
 
 // ============================================================
@@ -625,54 +607,35 @@ function crearGotasLluvia(){
 }
 
 // ============================================================
-// COSTOS (calculadora)
+// MEJOR OPCION (PRO)
 // ============================================================
-var EngineConfig={
-    '1.0':{range:'16-22 km/L',min:16,max:22},
-    '1.4':{range:'11-16 km/L',min:11,max:16},
-    '1.8':{range:'8-12 km/L',min:8,max:12},
-    '2.5':{range:'5-9 km/L',min:5,max:9}
-};
-var GALON_TO_LITRO=3.78541;
-function toggleCostsModal(){var o=document.getElementById('costsModalOverlay');o.classList.toggle('show');if(o.classList.contains('show'))costsCalculateAll();}
-function updateMileage(){var es=document.getElementById('engineSize').value;var c=EngineConfig[es]||EngineConfig['1.8'];document.getElementById('mileageRange').value=c.range;costsCalculateAll();}
-function convertToDaily(cantidad,periodo){if(!cantidad||periodo==='none')return 0;switch(periodo){case'daily':return cantidad;case'weekly':return cantidad/7;case'monthly':return cantidad/30;case'yearly':return cantidad/365;default:return 0;}}
-function costsCalculateAll(){
-    try{
-        var es=document.getElementById('engineSize').value;
-        var c=EngineConfig[es]||EngineConfig['1.8'];
-        document.getElementById('mileageRange').value=c.range;
-        var fu=document.getElementById('fuelUnit').value;
-        var fp=parseFloat(document.getElementById('fuelPrice').value)||0;
-        if(fu==='galon')fp=fp/GALON_TO_LITRO;
-        var dk=totalDistance>0?totalDistance:0;
-        var sm=c.max>0?c.max:1;
-        var fc=dk/sm*fp;
-        var cv=parseFloat(document.getElementById('carValue').value)||0;
-        var ul=parseInt(document.getElementById('usefulLife').value)||8;
-        var dd=cv>0?cv/(ul*365):0;
-        document.getElementById('dailyDepreciation').textContent='$'+dd.toFixed(2);
-        var metaTotal = dd * (ul * 365);
-        var elMeta = document.getElementById('totalSavingsGoal');
-        if(elMeta) elMeta.textContent = 'Meta: $' + metaTotal.toFixed(2) + ' en ' + ul + ' anos';
-        var fc2=0;
-        fc2+=convertToDaily(parseFloat(document.getElementById('carPayment').value)||0,document.getElementById('carPaymentPeriod').value);
-        fc2+=convertToDaily(parseFloat(document.getElementById('insurance').value)||0,document.getElementById('insurancePeriod').value);
-        fc2+=convertToDaily(parseFloat(document.getElementById('maintenance').value)||0,document.getElementById('maintenancePeriod').value);
-        var tf=fc2+dd;
-        var dp=parseFloat(document.getElementById('dailyProfit').value)||0;
-        var td=fc+tf+dp;
-        document.getElementById('totalDaily').textContent='$'+td.toFixed(2);
-        document.getElementById('breakFuel').textContent='$'+fc.toFixed(2);
-        document.getElementById('breakFixed').textContent='$'+tf.toFixed(2);
-        document.getElementById('breakProfit').textContent='$'+dp.toFixed(2);
-        document.getElementById('saveDaily').textContent='$'+td.toFixed(2);
-        document.getElementById('saveWeekly').textContent='$'+(td*7).toFixed(2);
-        document.getElementById('saveMonthly').textContent='$'+(td*30).toFixed(2);
-        var sdk=dk>0?dk:0.001;
-        document.getElementById('costPerKm').textContent='$'+(td/sdk).toFixed(2)+'/km';
-        sendMapaData();
-    }catch(e){console.error(e);}
+function activarMejorOpcion(){
+    var btn = document.getElementById('mejorOpcionBtn');
+    btn.disabled = true;
+    playBeep();
+    addLog('BEEP - Iniciando secuencia...','info');
+    setTimeout(function(){
+        playRoarWithVoice();
+        addLog('RUGIDO + VOZ: Protocolo activado.','info');
+        btn.textContent = 'Activando...';
+        fetch(SERVER_BASE+'/uber/activar_mejor_opcion',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({imprimir_prompt:true})
+        }).then(function(res){return res.json();}).then(function(data){
+            if(data.message){
+                addLog('OK '+data.message,'pro');
+                document.getElementById('proIndicator').classList.add('active');
+                showToast('MODO PRO ACTIVADO');
+                if(data.estado) addLog('Estado: '+data.estado,'info');
+            }
+        }).catch(function(err){
+            addLog('Error: '+err.message,'error');
+        }).finally(function(){
+            btn.disabled=false;
+            btn.innerHTML='MEJOR OPCION';
+        });
+    },2000);
 }
 
 // ============================================================
@@ -698,12 +661,12 @@ function sendMapaData() {
         longitude: currentLng,
         viaje_activo: tripActive,
         multiplicador: getTotalMultiplier(),
-        total_daily: parseFloat(document.getElementById('totalDaily')?.textContent?.replace('$','')) || 0,
-        fuel_cost_daily: parseFloat(document.getElementById('breakFuel')?.textContent?.replace('$','')) || 0,
-        costo_fijo_diario: parseFloat(document.getElementById('breakFixed')?.textContent?.replace('$','')) || 0,
-        costo_km: parseFloat(document.getElementById('costPerKm')?.textContent?.replace('$','').replace('/km','')) || 0,
-        engine_size: document.getElementById('engineSize')?.value || '1.8',
-        mileage: parseFloat(document.getElementById('mileageRange')?.value) || 10.0,
+        total_daily: 0,
+        fuel_cost_daily: 0,
+        costo_fijo_diario: 0,
+        costo_km: 0,
+        engine_size: '1.8',
+        mileage: 10.0,
         daily_km: totalDistance,
         timestamp: Date.now()
     };
@@ -755,32 +718,35 @@ function init(){
         addLog('Geolocation no soportado','error');
     }
     setInterval(function(){document.getElementById('clock').textContent=new Date().toLocaleTimeString();},1000);
-    refreshNetwork(); 
-    fetchSingularityStatus();
-    fetchGPSSymbiosisStatus();
-    setInterval(refreshNetwork,30000);
-    setInterval(fetchSingularityStatus,30000);
-    setInterval(fetchGPSSymbiosisStatus,15000);
+    
+    // Actualizar estadisticas tecnicas cada 5 segundos
+    setInterval(fetchGPSSymbiosisStatus, 5000);
     setInterval(function(){updateMultiplierUI();if(tripActive)recalcFare();},10000);
-    updateMileage();
-    costsCalculateAll();
-    document.getElementById('mejorOpcionBtn').onclick=activarMejorOpcion;
-    document.getElementById('rainBtn').onclick=toggleRainMode;
-    document.getElementById('gpsStatusBtn').onclick=fetchGPSSymbiosisStatus;
-    document.getElementById('resetBtn').onclick=resetTrip;
-    document.getElementById('btScanBtn').onclick=scanBluetooth;
-    document.getElementById('logToggleBtn').onclick=function(){var p=document.getElementById('logPanel');p.classList.toggle('show');};
-    document.getElementById('engineSize').onchange=updateMileage;
-    document.getElementById('closeCostsBtn').onclick=toggleCostsModal;
-    ['fuelPrice','carValue','usefulLife','carPayment','insurance','maintenance','dailyProfit'].forEach(function(id){
-        var el=document.getElementById(id);
-        if(el)el.oninput=costsCalculateAll;
-    });
-    ['carPaymentPeriod','insurancePeriod','maintenancePeriod','fuelUnit'].forEach(function(id){
-        var el=document.getElementById(id);
-        if(el)el.onchange=costsCalculateAll;
-    });
     setInterval(sendMapaData, 5000);
+    
+    // Botones
+    document.getElementById('mejorOpcionBtn').onclick = activarMejorOpcion;
+    document.getElementById('rainBtn').onclick = toggleRainMode;
+    document.getElementById('gpsStatusBtn').onclick = function(){
+        fetchGPSSymbiosisStatus();
+        // Forzar actualizacion de ubicacion
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(function(pos){
+                updatePosition(pos);
+                addLog('Ubicacion forzada obtenida','info');
+            }, function(err){ addLog('Error al forzar GPS: '+err.message,'error'); }, {enableHighAccuracy:true, timeout:5000});
+        }
+        showToast('Actualizando GPS...');
+    };
+    document.getElementById('resetBtn').onclick = resetTrip;
+    document.getElementById('btScanBtn').onclick = function(){
+        activarSingularidadOmega();  // Activa singularidad
+        setTimeout(scanBluetooth, 500); // Escanea BT después de medio segundo
+    };
+    document.getElementById('logToggleBtn').onclick = function(){var p=document.getElementById('logPanel');p.classList.toggle('show');};
+    
+    // Inicial
+    fetchGPSSymbiosisStatus();
     sendMapaData();
     if('speechSynthesis' in window) speechSynthesis.getVoices();
     addLog('Sistema integrado listo','info');
