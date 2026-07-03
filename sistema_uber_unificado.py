@@ -264,6 +264,8 @@ DEBUG = os.getenv('DEBUG') is not None
 # ================================================================================
 # SECCION 3: DEPENDENCIAS OPCIONALES
 # ================================================================================
+
+# --- NUMPY ---
 try:
     import numpy as np
     HAS_NUMPY = True
@@ -271,17 +273,33 @@ except ImportError:
     HAS_NUMPY = False
     np = None
 
+# --- REQUESTS ---
 try:
     import requests
     HAS_REQUESTS = True
 except ImportError:
     HAS_REQUESTS = False
 
+# --- FLASK + CORS ---
+# Inicializamos las variables globales
+HAS_FLASK = False
+app = None
+
 try:
     from flask import Flask, jsonify, request
+    from flask_cors import CORS
+    # Creamos la instancia de la aplicación
+    app = Flask(__name__)
     HAS_FLASK = True
 except ImportError:
-    HAS_FLASK = False
+    # Si falla, mantenemos HAS_FLASK = False y app = None
+    pass
+
+# --- VERIFICACIÓN (opcional, para logs) ---
+if HAS_FLASK:
+    print("[OK] Flask y CORS cargados correctamente.")
+else:
+    print("[WARNING] Flask no disponible. El modo web estará desactivado.")
 
 # ================================================================================
 # SECCION 4: REGISTRO COMPARTIDO DE DATOS (thread-safe)
@@ -4765,18 +4783,21 @@ def procesar_datos_mapa_con_gps(datos_mapa: Dict[str, Any], usuario_id: str) -> 
         pass
     return resultado
 
-
 # ================================================================================
 # SECCION 30: CONFIGURACION FLASK Y ENDPOINTS INTEGRADOS
 # ================================================================================
 
-if HAS_FLASK:
-    HTTP_PORT = int(os.getenv('PORT', 8080))
+# Puerto dinámico (siempre disponible, incluso sin Flask)
+HTTP_PORT = int(os.getenv('PORT', 8080))
 
+# Solo configuramos Flask si está disponible
+if HAS_FLASK and app is not None:
+    # Configurar CORS
     try:
         from flask_cors import CORS
         CORS(app, resources={r"/*": {"origins": "*"}})
     except ImportError:
+        # Fallback manual si CORS no está instalado
         @app.after_request
         def add_cors_headers(response):
             response.headers['Access-Control-Allow-Origin'] = '*'
@@ -4784,6 +4805,9 @@ if HAS_FLASK:
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
             return response
 
+    # ============================================================
+    # FUNCIÓN AUXILIAR PARA OBTENER USER-ID
+    # ============================================================
     def _get_user_id_from_request() -> str:
         user_id = request.headers.get('X-User-ID')
         if user_id:
@@ -4812,14 +4836,14 @@ if HAS_FLASK:
         try:
             return send_from_directory('static', 'mapa_pro.html')
         except Exception as e:
-            return """
+            return f"""
             <html>
             <head><title>Puente - Error</title></head>
             <body style="background:#0a0a0f;color:#fff;font-family:sans-serif;padding:20px;">
             <h1>Puente Uber Daimon</h1>
             <p style="color:#ff4466;">Error: No se encontro el archivo mapa_pro.html</p>
             <p style="color:#88a;">Asegurate de que el archivo este en la carpeta 'static/'</p>
-            <p style="color:#88a;">Error: """ + str(e) + """</p>
+            <p style="color:#88a;">Error: {str(e)}</p>
             <hr>
             <p><a href="/health" style="color:#4d94ff;">Ver estado del sistema</a></p>
             </body>
@@ -4835,6 +4859,9 @@ if HAS_FLASK:
     def favicon():
         return '', 204
 
+    # ============================================================
+    # ENDPOINTS DE LA API
+    # ============================================================
     @app.route('/ceoia/orden', methods=['POST', 'OPTIONS'])
     def endpoint_ceoia_orden_frontend():
         if request.method == 'OPTIONS':
@@ -4925,7 +4952,7 @@ if HAS_FLASK:
                 contexto["demanda"] = sess.symbiosis.demand_predictor.predict(loc.latitude, loc.longitude)
         return jsonify({
             "exito": True,
-            "respuesta": "Procesando: '{}' | Daimon IA + GPS Symbiosis analizando contexto...".format(pregunta),
+            "respuesta": f"Procesando: '{pregunta}' | Daimon IA + GPS Symbiosis analizando contexto...",
             "tiempo_respuesta_ms": random.randint(120, 450),
             "estado": "OK",
             "contexto": contexto
@@ -5069,15 +5096,10 @@ if HAS_FLASK:
                 usuario_nombre=usuario_nombre
             )
             resumen = (
-                "Nuevo bloque minado. Usuario: {}, "
-                "Recompensa: {:.2f}, "
-                "Zona: {}, "
-                "URL: {}".format(
-                    usuario_nombre,
-                    bloque.get('recompensa', 0),
-                    bloque.get('zona'),
-                    url or 'automatica'
-                )
+                f"Nuevo bloque minado. Usuario: {usuario_nombre}, "
+                f"Recompensa: {bloque.get('recompensa', 0):.2f}, "
+                f"Zona: {bloque.get('zona')}, "
+                f"URL: {url or 'automatica'}"
             )
             try:
                 ceo = get_ceo_instance()
@@ -5249,6 +5271,9 @@ setInterval(updateStats,3000);updateStats();checkGPSStatus();if('speechSynthesis
 </body>
 </html>"""
 
+    # ============================================================
+    # EXPORTACIONES Y FUNCIONES AUXILIARES
+    # ============================================================
     __all__ = ['app', 'HTTP_PORT', 'log', 'get_recent_logs',
                'minar_bloque_por_publicacion_controlado', 'obtener_estado_completo',
                'symbiosis', 'gps_registry']
@@ -5282,12 +5307,12 @@ setInterval(updateStats,3000);updateStats();checkGPSStatus();if('speechSynthesis
                 app.run(host="0.0.0.0", port=HTTP_PORT, debug=False, use_reloader=False, threaded=True)
             except OSError as e:
                 if "Address already in use" in str(e):
-                    log_message("Puerto {} ya en uso".format(HTTP_PORT))
+                    log_message(f"Puerto {HTTP_PORT} ya en uso")
                 else:
-                    log_message("Error al iniciar la interfaz: {}".format(e))
+                    log_message(f"Error al iniciar la interfaz: {e}")
         hilo = threading.Thread(target=_run, daemon=True, name="FrontendFlask")
         hilo.start()
-        log_message("Frontend iniciado en hilo (puerto {})".format(HTTP_PORT))
+        log_message(f"Frontend iniciado en hilo (puerto {HTTP_PORT})")
         return hilo
 
     def iniciar_limpieza_sesiones():
@@ -5300,17 +5325,15 @@ setInterval(updateStats,3000);updateStats();checkGPSStatus();if('speechSynthesis
         log_message("Limpieza de sesiones iniciada (cada 1 hora)")
 
 else:
+    # Si Flask no está disponible, mostramos un warning
     log.warning("Flask no disponible. La interfaz web no funcionara.")
-    app = None
-    HTTP_PORT = None
-
+    # Definimos funciones dummy para evitar errores en otras partes
     def iniciar_frontend_hilo():
         log.error("Flask no instalado. No se puede iniciar el frontend.")
         return None
 
     def iniciar_limpieza_sesiones():
         return None
-
 
 # ================================================================================
 # SECCION 31: MAIN UNIFICADO (Flask en hilo + modo continuo GPS)
