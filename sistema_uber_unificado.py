@@ -1,4 +1,4 @@
-echo "# FIX_RENDER_2026" >> sistema_uber_unificado.py
+echo "# FORCE_RENDER_DEPLOY" >> sistema_uber_unificado.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
