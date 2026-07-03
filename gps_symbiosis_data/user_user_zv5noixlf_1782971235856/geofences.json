@@ -1,0 +1,72 @@
+[
+  {
+    "id": "z1_albrook",
+    "center": {
+      "latitude": 8.985,
+      "longitude": -79.52,
+      "altitude": 0.0,
+      "accuracy": 0.0,
+      "source": "unknown",
+      "timestamp": 1783016439.419408
+    },
+    "radius_km": 3.0,
+    "created_at": "2026-07-02T18:20:39.419475+00:00",
+    "metadata": {}
+  },
+  {
+    "id": "z2_arraijan",
+    "center": {
+      "latitude": 8.88,
+      "longitude": -79.76,
+      "altitude": 0.0,
+      "accuracy": 0.0,
+      "source": "unknown",
+      "timestamp": 1783016439.419526
+    },
+    "radius_km": 3.0,
+    "created_at": "2026-07-02T18:20:39.419551+00:00",
+    "metadata": {}
+  },
+  {
+    "id": "z3_chorrera",
+    "center": {
+      "latitude": 8.875,
+      "longitude": -79.78,
+      "altitude": 0.0,
+      "accuracy": 0.0,
+      "source": "unknown",
+      "timestamp": 1783016439.419571
+    },
+    "radius_km": 3.0,
+    "created_at": "2026-07-02T18:20:39.419589+00:00",
+    "metadata": {}
+  },
+  {
+    "id": "z4_sancarlos",
+    "center": {
+      "latitude": 8.89,
+      "longitude": -79.8,
+      "altitude": 0.0,
+      "accuracy": 0.0,
+      "source": "unknown",
+      "timestamp": 1783016439.419607
+    },
+    "radius_km": 3.0,
+    "created_at": "2026-07-02T18:20:39.419637+00:00",
+    "metadata": {}
+  },
+  {
+    "id": "z5_veracruz",
+    "center": {
+      "latitude": 8.85,
+      "longitude": -79.82,
+      "altitude": 0.0,
+      "accuracy": 0.0,
+      "source": "unknown",
+      "timestamp": 1783016439.419657
+    },
+    "radius_km": 3.0,
+    "created_at": "2026-07-02T18:20:39.419672+00:00",
+    "metadata": {}
+  }
+]

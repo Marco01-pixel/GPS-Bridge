@@ -1,0 +1,191 @@
+{
+  "beacons": {},
+  "wifi_networks": {
+    "EE:9F:80:D9:9A:4F": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "unknown",
+      "tx_power": -71,
+      "auto_learned": false,
+      "added_at": 1783046862.2969723,
+      "last_seen": 1783046862.2969735
+    },
+    "7C:13:1D:8C:14:3B": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "LIB-6684497",
+      "tx_power": -94,
+      "auto_learned": false,
+      "added_at": 1783046862.2969992,
+      "last_seen": 1783046862.2970006
+    },
+    "52:A5:DC:99:C5:A9": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "COWIFI5Ghz292999090/0",
+      "tx_power": -71,
+      "auto_learned": false,
+      "added_at": 1783046862.2970145,
+      "last_seen": 1783046862.297015
+    },
+    "EE:9F:80:F2:13:FC": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "unknown",
+      "tx_power": -30,
+      "auto_learned": false,
+      "added_at": 1783046862.2970266,
+      "last_seen": 1783046862.297027
+    },
+    "E8:9F:80:F2:13:4C": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -58,
+      "auto_learned": false,
+      "added_at": 1783046862.297037,
+      "last_seen": 1783046862.2970376
+    },
+    "EE:9F:80:E1:A5:2B": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "unknown",
+      "tx_power": -60,
+      "auto_learned": false,
+      "added_at": 1783046862.2970471,
+      "last_seen": 1783046862.297048
+    },
+    "E8:9F:80:D9:9A:50": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -80,
+      "auto_learned": false,
+      "added_at": 1783046862.2970586,
+      "last_seen": 1783046862.297059
+    },
+    "50:A5:DC:E9:C5:A8": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "COWIFI292999090/0",
+      "tx_power": -59,
+      "auto_learned": false,
+      "added_at": 1783046862.2970679,
+      "last_seen": 1783046862.2970693
+    },
+    "50:A5:DC:E9:C5:A9": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "COWIFI292999090/0",
+      "tx_power": -70,
+      "auto_learned": false,
+      "added_at": 1783046862.2970774,
+      "last_seen": 1783046862.2970784
+    },
+    "E8:9F:80:F2:13:4D": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -73,
+      "auto_learned": false,
+      "added_at": 1783046862.2970865,
+      "last_seen": 1783046862.297087
+    },
+    "60:D2:48:89:C8:09": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "COWIFI230193635/0",
+      "tx_power": -90,
+      "auto_learned": false,
+      "added_at": 1783046862.2970955,
+      "last_seen": 1783046862.297096
+    },
+    "E8:9F:80:E1:A5:2C": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -82,
+      "auto_learned": false,
+      "added_at": 1783046862.2971053,
+      "last_seen": 1783046862.2971065
+    },
+    "E8:9F:80:D9:9A:4F": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -72,
+      "auto_learned": false,
+      "added_at": 1783046862.2971146,
+      "last_seen": 1783046862.2971156
+    },
+    "E8:9F:80:E1:A5:2B": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -60,
+      "auto_learned": false,
+      "added_at": 1783046862.2971244,
+      "last_seen": 1783046862.297125
+    },
+    "EE:9F:80:F2:13:4C": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "unknown",
+      "tx_power": -58,
+      "auto_learned": false,
+      "added_at": 1783046862.2971349,
+      "last_seen": 1783046862.2971354
+    },
+    "E8:9F:80:F2:13:FC": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -30,
+      "auto_learned": false,
+      "added_at": 1783046862.2971454,
+      "last_seen": 1783046862.2971458
+    },
+    "E8:9F:80:F2:13:FD": {
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "ssid": "Win Win Network",
+      "tx_power": -46,
+      "auto_learned": false,
+      "added_at": 1783046862.2971547,
+      "last_seen": 1783046862.2971554
+    }
+  },
+  "cell_towers": {
+    "0-0-65535-268435455": {
+      "ci": 268435455,
+      "tac": 65535,
+      "mcc": 0,
+      "mnc": 0,
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "radius_m": 1000.0,
+      "confidence": 0.059999999999999984,
+      "added_at": 1783046862.2968156,
+      "last_seen": 1783047809.266043,
+      "auto_learned": true,
+      "first_rsrp": -90,
+      "update_count": 1
+    },
+    "714-20-6110-102683935": {
+      "ci": 102683935,
+      "tac": 6110,
+      "mcc": 714,
+      "mnc": 20,
+      "lat": 6095157.168013728,
+      "lon": 2248215.799743388,
+      "radius_m": 1000.0,
+      "confidence": 0.059999999999999984,
+      "added_at": 1783046862.296891,
+      "last_seen": 1783047809.2659998,
+      "auto_learned": true,
+      "first_rsrp": -98,
+      "update_count": 1
+    }
+  },
+  "timestamp": 1783047810.194784
+}

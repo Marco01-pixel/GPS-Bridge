@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.gpsbridge.app-merged_res-34:/layout_activity_main.xml.flat",
+        "source": "com.gpsbridge.app-main-36:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.gpsbridge.app-merged_res-34:/drawable_ic_launcher.xml.flat",
+        "source": "com.gpsbridge.app-main-36:/drawable/ic_launcher.xml"
+    }
+]

@@ -1,0 +1,271 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.gpsbridge"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+8-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="34" />
+9-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml
+10
+11    <!-- PERMISOS -->
+12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+12-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:7:5-79
+12-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:7:22-76
+13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+13-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:8:5-77
+13-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:8:22-74
+14    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+14-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:9:5-81
+14-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:9:22-78
+15    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+15-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:10:5-85
+15-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:10:22-82
+16    <uses-permission android:name="android.permission.BLUETOOTH" />
+16-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:11:5-68
+16-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:11:22-65
+17    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+17-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:12:5-74
+17-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:12:22-71
+18    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+18-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:13:5-73
+18-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:13:22-70
+19    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+19-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:14:5-76
+19-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:14:22-73
+20    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+20-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:15:5-76
+20-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:15:22-73
+21    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+21-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:16:5-76
+21-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:16:22-73
+22    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+22-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:17:5-75
+22-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:17:22-72
+23    <uses-permission android:name="android.permission.INTERNET" />
+23-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:18:5-67
+23-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:18:22-64
+24    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+24-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:19:5-79
+24-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:19:22-76
+25    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+25-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:20:5-81
+25-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:20:22-78
+26    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+26-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:21:5-80
+26-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:21:22-77
+27    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+27-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:22:5-77
+27-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:22:22-74
+28    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+28-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:23:5-86
+28-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:23:22-83
+29    <uses-permission android:name="android.permission.WAKE_LOCK" />
+29-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:24:5-68
+29-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:24:22-65
+30
+31    <queries>
+31-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:9:5-16:15
+32        <intent>
+32-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:10:9-12:18
+33            <action android:name="android.intent.action.MAIN" />
+33-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:40:17-69
+33-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:40:25-66
+34        </intent>
+35        <intent>
+35-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:13:9-15:18
+36            <action android:name="android.intent.action.VIEW" />
+36-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:14:13-65
+36-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:14:21-62
+37        </intent>
+38    </queries>
+39
+40    <permission
+40-->[androidx.core:core:1.12.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/67cb1ef9cbc087482779a252c63a0d9d/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+41        android:name="com.gpsbridge.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+41-->[androidx.core:core:1.12.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/67cb1ef9cbc087482779a252c63a0d9d/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+42        android:protectionLevel="signature" />
+42-->[androidx.core:core:1.12.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/67cb1ef9cbc087482779a252c63a0d9d/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+43
+44    <uses-permission android:name="com.gpsbridge.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+44-->[androidx.core:core:1.12.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/67cb1ef9cbc087482779a252c63a0d9d/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+44-->[androidx.core:core:1.12.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/67cb1ef9cbc087482779a252c63a0d9d/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+45
+46    <application
+46-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:26:5-51:19
+47        android:allowBackup="true"
+47-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:27:9-35
+48        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+48-->[androidx.core:core:1.12.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/67cb1ef9cbc087482779a252c63a0d9d/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+49        android:debuggable="true"
+50        android:extractNativeLibs="false"
+51        android:label="@string/app_name"
+51-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:29:9-41
+52        android:requestLegacyExternalStorage="true"
+52-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:33:9-52
+53        android:supportsRtl="true"
+53-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:31:9-35
+54        android:theme="@style/Theme.AppCompat.DayNight"
+54-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:32:9-56
+55        android:usesCleartextTraffic="true" >
+55-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:33:53-88
+56        <activity
+56-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:35:9-43:20
+57            android:name="com.gpsbridge.MainActivity"
+57-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:36:13-41
+58            android:exported="true"
+58-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:37:13-36
+59            android:screenOrientation="portrait" >
+59-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:38:13-49
+60            <intent-filter>
+60-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:39:13-42:29
+61                <action android:name="android.intent.action.MAIN" />
+61-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:40:17-69
+61-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:40:25-66
+62
+63                <category android:name="android.intent.category.LAUNCHER" />
+63-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:41:17-77
+63-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:41:27-74
+64            </intent-filter>
+65        </activity>
+66
+67        <service
+67-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:45:9-49:56
+68            android:name="com.gpsbridge.GPSBridgeService"
+68-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:46:13-45
+69            android:enabled="true"
+69-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:47:13-35
+70            android:exported="false"
+70-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:48:13-37
+71            android:foregroundServiceType="location" />
+71-->/data/data/com.termux/files/home/BridgeApp/GPS_Bridge/app/src/main/AndroidManifest.xml:49:13-53
+72
+73        <activity
+73-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:19:9-24:75
+74            android:name="com.blankj.utilcode.util.UtilsTransActivity4MainProcess"
+74-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:20:13-83
+75            android:configChanges="orientation|keyboardHidden|screenSize"
+75-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:21:13-74
+76            android:exported="false"
+76-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:22:13-37
+77            android:theme="@style/ActivityTranslucent"
+77-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:23:13-55
+78            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
+78-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:24:13-72
+79        <activity
+79-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:25:9-31:75
+80            android:name="com.blankj.utilcode.util.UtilsTransActivity"
+80-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:26:13-71
+81            android:configChanges="orientation|keyboardHidden|screenSize"
+81-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:27:13-74
+82            android:exported="false"
+82-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:28:13-37
+83            android:multiprocess="true"
+83-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:29:13-40
+84            android:theme="@style/ActivityTranslucent"
+84-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:30:13-55
+85            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
+85-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:31:13-72
+86
+87        <provider
+87-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:33:9-41:20
+88            android:name="com.blankj.utilcode.util.UtilsFileProvider"
+88-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:34:13-70
+89            android:authorities="com.gpsbridge.utilcode.fileprovider"
+89-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:35:13-73
+90            android:exported="false"
+90-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:36:13-37
+91            android:grantUriPermissions="true" >
+91-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:37:13-47
+92            <meta-data
+92-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:38:13-40:68
+93                android:name="android.support.FILE_PROVIDER_PATHS"
+93-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:39:17-67
+94                android:resource="@xml/util_code_provider_paths" />
+94-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:40:17-65
+95        </provider>
+96
+97        <service
+97-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:43:9-49:19
+98            android:name="com.blankj.utilcode.util.MessengerUtils$ServerService"
+98-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:44:13-81
+99            android:exported="false" >
+99-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:45:13-37
+100            <intent-filter>
+100-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:46:13-48:29
+101                <action android:name="com.gpsbridge.messenger" />
+101-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:47:17-69
+101-->[com.blankj:utilcodex:1.31.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/5bddedc2ab48a358d7548531b165c17a/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:47:25-66
+102            </intent-filter>
+103        </service>
+104
+105        <provider
+105-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+106            android:name="androidx.startup.InitializationProvider"
+106-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+107            android:authorities="com.gpsbridge.androidx-startup"
+107-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+108            android:exported="false" >
+108-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+109            <meta-data
+109-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+110                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+110-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+111                android:value="androidx.startup" />
+111-->[androidx.emoji2:emoji2:1.2.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/97e1e46a2fe1cb6aff0d656795075e8e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+112            <meta-data
+112-->[androidx.lifecycle:lifecycle-process:2.6.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/277e61058675feed4a83e067261083f9/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:29:13-31:52
+113                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+113-->[androidx.lifecycle:lifecycle-process:2.6.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/277e61058675feed4a83e067261083f9/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:30:17-78
+114                android:value="androidx.startup" />
+114-->[androidx.lifecycle:lifecycle-process:2.6.1] /data/data/com.termux/files/home/.gradle/caches/transforms-3/277e61058675feed4a83e067261083f9/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:31:17-49
+115            <meta-data
+115-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+116                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+116-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+117                android:value="androidx.startup" />
+117-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+118        </provider>
+119
+120        <receiver
+120-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+121            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+121-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+122            android:directBootAware="false"
+122-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+123            android:enabled="true"
+123-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+124            android:exported="true"
+124-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+125            android:permission="android.permission.DUMP" >
+125-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+126            <intent-filter>
+126-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+127                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+127-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+127-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+128            </intent-filter>
+129            <intent-filter>
+129-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+130                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+130-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+130-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+131            </intent-filter>
+132            <intent-filter>
+132-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+133                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+133-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+133-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+134            </intent-filter>
+135            <intent-filter>
+135-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+136                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+136-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+136-->[androidx.profileinstaller:profileinstaller:1.3.0] /data/data/com.termux/files/home/.gradle/caches/transforms-3/ed79bf99768fe69e3751dc10c7d74d7c/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+137            </intent-filter>
+138        </receiver>
+139    </application>
+140
+141</manifest>

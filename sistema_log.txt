@@ -1,0 +1,83 @@
+======================================================================
+UBER DAIMON VIVO + SOCIALCOIN + GPS SYMBIOSIS (UNIFICADO) v3.0
+======================================================================
+Puerto Flask: 8081
+Mapa Pro: http://localhost:8081/mapa_pro
+Mining Demo: http://localhost:8081/mining_demo
+Auto-aprendizaje: ACTIVADO (Beacons, Torres, WiFi)
+Persistencia de datos: ACTIVADA (gps_learned_data.json)
+Uber Bridge: DETECTADO (sensores nativos Android disponibles)
+======================================================================
+[2026-07-02T16:10:39.067913Z] Limpieza de sesiones iniciada (cada 1 hora)
+[2026-07-02T16:10:39.068687Z] Frontend iniciado en hilo (puerto 8081)
+[+] Frontend Flask corriendo en hilo daemon
+[+] Accede al mapa en: http://localhost:8081/mapa_pro
+
+╔══════════════════════════════════════════════════════════════╗
+║              GPS SYMBIOSIS ULTRA - AYUDA                    ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  COMANDOS DISPONIBLES:                                      ║
+║                                                              ║
+║  1. Modo Continuo (por defecto)                            ║
+║     Ejecuta el sistema en modo CLI con monitoreo continuo   ║
+║                                                              ║
+║  2. Modo Web (si Flask está disponible)                    ║
+║     Accede a: http://localhost:8080/mapa_pro               ║
+║     Accede a: http://localhost:8080/mining_demo            ║
+║                                                              ║
+║  3. Auto-aprendizaje automatico                             ║
+║     - Bluetooth: Escanea y aprende beacons cercanos        ║
+║     - Celular: Aprende torres LTE/GSM                      ║
+║     - WiFi: Aprende redes WiFi cercanas                    ║
+║                                                              ║
+║  4. Uber Bridge (sensores nativos Android)                 ║
+║     Si UberBridgeService.java esta corriendo en el puerto  ║
+║     9877, el sistema usara GPS, BLE, WiFi y celular        ║
+║     nativos de Android. Fallback automatico a termux-api.  ║
+║                                                              ║
+║  5. Persistencia de datos                                  ║
+║     Los datos aprendidos se guardan en:                    ║
+║     ./gps_learned_data.json                                ║
+║                                                              ║
+║  6. Teclas durante ejecucion:                              ║
+║     Ctrl+C  - Detener el sistema                           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+    
+
+======================================================================
+ SISTEMA GPS SYMBIOSIS ULTRA v3.0 - MODO CONTINUO
+======================================================================
+  Modulos activos:
+  - GPS con EKF mejorado
+  - DGPS (Correccion Diferencial)
+  - IMU (Fusion Inercial)
+  - Bluetooth (Kalman RSSI + Fingerprinting)
+  - WiFi Positioning
+  - Telefonia Celular (LTE/GSM)
+  - Geofencing
+  - Enrutamiento (Dijkstra/A*)
+  - RL Ensemble (DQN/SARSA/AC/PPO)
+  - Fuzzy Logic
+  - Auto-aprendizaje de Beacons, Torres y WiFi
+  - Uber Bridge (sensores nativos Android)
+======================================================================
+  Presiona Ctrl+C para detener
+======================================================================
+ * Serving Flask app 'sistema_uber_unificado'
+ * Debug mode: off
+[11:10:39] [INFO] GPS Symbiosis usando termux-api (fallback)
+[11:10:39] [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8081
+ * Running on http://192.168.0.4:8081
+[11:10:39] [INFO] [33mPress CTRL+C to quit[0m
+
+[+] Auto-aprendizaje activado:
+  - Bluetooth: ACTIVADO
+  - Celular: ACTIVADO
+  - WiFi: ACTIVADO
+
+[+] Esperando primera fijacion GPS...
+.........

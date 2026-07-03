@@ -1,0 +1,249 @@
+package com.gpsbridge
+
+import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.WebChromeClient
+import android.webkit.GeolocationPermissions
+import android.webkit.WebSettings
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.Gson
+import java.io.File
+
+class MainActivity : AppCompatActivity() {
+
+    private val PERMISSION_REQUEST_CODE = 100
+    private lateinit var statusTextView: TextView
+    private lateinit var startButton: Button
+    private lateinit var installTermuxButton: Button
+    private lateinit var serviceStatusTextView: TextView
+    private val gson = Gson()
+
+    private val REQUIRED_PERMISSIONS = mutableListOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.CHANGE_WIFI_STATE,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.INTERNET,
+        Manifest.permission.ACCESS_NETWORK_STATE
+    )
+
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                "SENSOR_UPDATE" -> {
+                    val data = intent.getStringExtra("data")
+                    if (data != null) {
+                        try {
+                            val json = gson.fromJson(data, Map::class.java)
+                            val type = json["type"] as? String
+                            when (type) {
+                                "GPS" -> {
+                                    val lat = json["latitude"]
+                                    val lon = json["longitude"]
+                                    statusTextView.text = "📍 GPS: $lat, $lon"
+                                }
+                                "BLUETOOTH" -> {
+                                    val devices = json["devices"] as? List<*>
+                                    statusTextView.text = "🔵 BT: ${devices?.size ?: 0} dispositivos"
+                                }
+                                "WIFI" -> {
+                                    val networks = json["networks"] as? List<*>
+                                    statusTextView.text = "📶 WiFi: ${networks?.size ?: 0} redes"
+                                }
+                                "CELL" -> {
+                                    val cells = json["cells"] as? List<*>
+                                    statusTextView.text = "📱 Celular: ${cells?.size ?: 0} torres"
+                                }
+                                "STATUS" -> {
+                                    serviceStatusTextView.text = "✅ Servidor activo en puerto 9877"
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // Ignorar
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        statusTextView = findViewById(R.id.statusTextView)
+        startButton = findViewById(R.id.startButton)
+        installTermuxButton = findViewById(R.id.installTermuxButton)
+        serviceStatusTextView = findViewById(R.id.serviceStatusTextView)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            REQUIRED_PERMISSIONS.add(Manifest.permission.BLUETOOTH_SCAN)
+            REQUIRED_PERMISSIONS.add(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+
+        checkPermissions()
+        checkTermuxInstalled()
+
+        startButton.setOnClickListener {
+            // MODIFICADO: Al presionar "INICIAR BRIDGE" abre el mapa Pro
+            abrirMapaPro()
+        }
+
+        installTermuxButton.setOnClickListener {
+            installTermux()
+        }
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            receiver,
+            IntentFilter().apply {
+                addAction("SENSOR_UPDATE")
+            }
+        )
+    }
+
+    // NUEVA FUNCIÓN: Abre el mapa Pro en un WebView
+    private fun abrirMapaPro() {
+        val webView = WebView(this)
+        val settings = webView.settings
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.loadWithOverviewMode = true
+        settings.useWideViewPort = true
+        settings.allowFileAccess = true
+        settings.allowContentAccess = true
+        settings.setSupportZoom(true)
+        settings.builtInZoomControls = true
+        settings.displayZoomControls = false
+
+        webView.webViewClient = WebViewClient()
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onGeolocationPermissionsShowPrompt(origin: String, callback: GeolocationPermissions.Callback) {
+                callback.invoke(origin, true, false)
+            }
+        }
+
+        // Cargar el mapa Pro desde el servidor
+        webView.loadUrl("http://localhost:8080/puente")
+
+        setContentView(webView)
+        requestNotificationPermission()
+    }
+
+    private fun checkTermuxInstalled() {
+        if (isTermuxInstalled()) {
+            installTermuxButton.visibility = android.view.View.GONE
+            statusTextView.text = "✅ Termux instalado"
+        } else {
+            installTermuxButton.visibility = android.view.View.VISIBLE
+            statusTextView.text = "⚠️ Termux no instalado"
+        }
+    }
+
+    private fun isTermuxInstalled(): Boolean {
+        return try {
+            packageManager.getPackageInfo("com.termux", 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    private fun installTermux() {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("https://f-droid.org/packages/com.termux/")
+        startActivity(intent)
+        Toast.makeText(this, "Instala Termux desde F-Droid", Toast.LENGTH_LONG).show()
+    }
+
+    private fun checkPermissions() {
+        val permissionsToRequest = REQUIRED_PERMISSIONS.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }.toMutableList()
+
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                PERMISSION_REQUEST_CODE
+            )
+        } else {
+            statusTextView.text = "✅ Permisos concedidos"
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            val allGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            if (allGranted) {
+                statusTextView.text = "✅ Permisos concedidos"
+            } else {
+                statusTextView.text = "⚠️ Algunos permisos denegados"
+            }
+        }
+    }
+
+    private fun startUberBridge() {
+        val serviceIntent = Intent(this, GPSBridgeService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
+
+        statusTextView.text = "🚀 Iniciando GPS Bridge..."
+        serviceStatusTextView.text = "⏳ Servidor iniciando en puerto 9877..."
+        Toast.makeText(this, "GPS Bridge iniciado", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
+    }
+
+    private val NOTIFICATION_PERMISSION_CODE = 1001
+    
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_CODE
+                )
+            }
+        }
+    }
+
+}
