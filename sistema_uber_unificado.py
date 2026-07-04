@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-sistema_uber_unificado.py - Sistema monolitico Uber Daimon + GPS Symbiosis
+sistema_uber_unificado_CONSOLIDADO.py - Sistema monolitico Uber Daimon + GPS Symbiosis
 Version consolidada con todas las modificaciones y fixes aplicados.
 Compatible con Termux/Android. Python >= 3.10
 """
@@ -264,8 +264,6 @@ DEBUG = os.getenv('DEBUG') is not None
 # ================================================================================
 # SECCION 3: DEPENDENCIAS OPCIONALES
 # ================================================================================
-
-# --- NUMPY ---
 try:
     import numpy as np
     HAS_NUMPY = True
@@ -273,33 +271,17 @@ except ImportError:
     HAS_NUMPY = False
     np = None
 
-# --- REQUESTS ---
 try:
     import requests
     HAS_REQUESTS = True
 except ImportError:
     HAS_REQUESTS = False
 
-# --- FLASK + CORS ---
-# Inicializamos las variables globales
-HAS_FLASK = False
-app = None
-
 try:
     from flask import Flask, jsonify, request
-    from flask_cors import CORS
-    # Creamos la instancia de la aplicación
-    app = Flask(__name__)
     HAS_FLASK = True
 except ImportError:
-    # Si falla, mantenemos HAS_FLASK = False y app = None
-    pass
-
-# --- VERIFICACIÓN (opcional, para logs) ---
-if HAS_FLASK:
-    print("[OK] Flask y CORS cargados correctamente.")
-else:
-    print("[WARNING] Flask no disponible. El modo web estará desactivado.")
+    HAS_FLASK = False
 
 # ================================================================================
 # SECCION 4: REGISTRO COMPARTIDO DE DATOS (thread-safe)
@@ -2198,10 +2180,10 @@ class TrajectoryExporter:
             'duration_sec': round(duration, 2),
             'avg_speed_ms': round(total_distance / duration, 2) if duration > 0 else 0.0
         }
-
 # ================================================================================
 # SECCION 15: PROVEEDORES DE GPS (REAL / SIMULADO) + RADAR WIFI
 # ================================================================================
+
 class GPSProvider:
     def get_location(self) -> Optional[Coordinate]:
         raise NotImplementedError
@@ -2303,26 +2285,47 @@ class TermuxGPS(GPSProvider):
 
 def create_gps_provider(use_real: bool = True,
                         fallback_to_sim: bool = False) -> GPSProvider:
-    # Si no estamos en Termux, siempre usamos simulación
-    if not IS_TERMUX:
-        return SimulatedGPS()
     if use_real:
         return TermuxGPS()
     return SimulatedGPS()
 
+# ========== FUNCIÓN RADAR WIFI MEJORADA (usa red conectada real si no hay escaneo) ==========
 def compute_wifi_radar(networks: List[Dict]) -> List[int]:
     radar = [0] * 8
+
+    # Si no hay redes, intentar obtener la red WiFi conectada (real)
+    if not networks:
+        try:
+            import subprocess, json
+            result = subprocess.run(['termux-wifi-connectioninfo'], capture_output=True, text=True, timeout=3)
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                ssid = data.get('ssid', '')
+                bssid = data.get('bssid', '')
+                if ssid:
+                    # Añadir la red conectada con un RSSI estimado (-40 es señal excelente)
+                    networks = [{"bssid": bssid, "ssid": ssid, "rssi": -40}]
+        except:
+            pass
+
+    # Si aún no hay redes, devolver ceros
+    if not networks:
+        return radar
+
+    # Procesar las redes (las reales o la conectada)
     for i, net in enumerate(networks):
         rssi = net.get("rssi", -100)
         pct = max(0, min(100, int(((rssi + 100) / 70) * 100)))
         sector = i % 8
         if pct > radar[sector]:
             radar[sector] = pct
+
     return radar
 
 def format_radar_compact(radar: List[int]) -> str:
     sectores = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
     return " ".join("{}:{:2d}%".format(s, radar[i]) for i, s in enumerate(sectores))
+
 # ================================================================================
 # SECCION 16: NUCLEO GPS MEJORADO (GPSCore Ultra)
 # ================================================================================
@@ -4787,17 +4790,14 @@ def procesar_datos_mapa_con_gps(datos_mapa: Dict[str, Any], usuario_id: str) -> 
 # SECCION 30: CONFIGURACION FLASK Y ENDPOINTS INTEGRADOS
 # ================================================================================
 
-# Puerto dinámico (siempre disponible, incluso sin Flask)
-HTTP_PORT = int(os.getenv('PORT', 8080))
+if HAS_FLASK:
+    app = Flask(__name__)
+    HTTP_PORT = encontrar_puerto_libre()
 
-# Solo configuramos Flask si está disponible
-if HAS_FLASK and app is not None:
-    # Configurar CORS
     try:
         from flask_cors import CORS
         CORS(app, resources={r"/*": {"origins": "*"}})
     except ImportError:
-        # Fallback manual si CORS no está instalado
         @app.after_request
         def add_cors_headers(response):
             response.headers['Access-Control-Allow-Origin'] = '*'
@@ -4805,9 +4805,6 @@ if HAS_FLASK and app is not None:
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
             return response
 
-    # ============================================================
-    # FUNCIÓN AUXILIAR PARA OBTENER USER-ID
-    # ============================================================
     def _get_user_id_from_request() -> str:
         user_id = request.headers.get('X-User-ID')
         if user_id:
@@ -4821,6 +4818,10 @@ if HAS_FLASK and app is not None:
             if user_id:
                 return user_id
         return 'anonimo'
+
+    # ---------- FUNCIÓN AUXILIAR PARA MULTIPLICADOR ----------
+    def get_total_multiplier_from_session(sess):
+        return sess.ultimos_datos_mapa.get('multiplicador', 1.0)
 
     # ============================================================
     # RUTAS DEL PUENTE - MAPA PRO COMO INTERFAZ PRINCIPAL
@@ -4836,14 +4837,14 @@ if HAS_FLASK and app is not None:
         try:
             return send_from_directory('static', 'mapa_pro.html')
         except Exception as e:
-            return f"""
+            return """
             <html>
             <head><title>Puente - Error</title></head>
             <body style="background:#0a0a0f;color:#fff;font-family:sans-serif;padding:20px;">
             <h1>Puente Uber Daimon</h1>
             <p style="color:#ff4466;">Error: No se encontro el archivo mapa_pro.html</p>
             <p style="color:#88a;">Asegurate de que el archivo este en la carpeta 'static/'</p>
-            <p style="color:#88a;">Error: {str(e)}</p>
+            <p style="color:#88a;">Error: """ + str(e) + """</p>
             <hr>
             <p><a href="/health" style="color:#4d94ff;">Ver estado del sistema</a></p>
             </body>
@@ -4859,9 +4860,6 @@ if HAS_FLASK and app is not None:
     def favicon():
         return '', 204
 
-    # ============================================================
-    # ENDPOINTS DE LA API
-    # ============================================================
     @app.route('/ceoia/orden', methods=['POST', 'OPTIONS'])
     def endpoint_ceoia_orden_frontend():
         if request.method == 'OPTIONS':
@@ -4952,7 +4950,7 @@ if HAS_FLASK and app is not None:
                 contexto["demanda"] = sess.symbiosis.demand_predictor.predict(loc.latitude, loc.longitude)
         return jsonify({
             "exito": True,
-            "respuesta": f"Procesando: '{pregunta}' | Daimon IA + GPS Symbiosis analizando contexto...",
+            "respuesta": "Procesando: '{}' | Daimon IA + GPS Symbiosis analizando contexto...".format(pregunta),
             "tiempo_respuesta_ms": random.randint(120, 450),
             "estado": "OK",
             "contexto": contexto
@@ -5096,10 +5094,15 @@ if HAS_FLASK and app is not None:
                 usuario_nombre=usuario_nombre
             )
             resumen = (
-                f"Nuevo bloque minado. Usuario: {usuario_nombre}, "
-                f"Recompensa: {bloque.get('recompensa', 0):.2f}, "
-                f"Zona: {bloque.get('zona')}, "
-                f"URL: {url or 'automatica'}"
+                "Nuevo bloque minado. Usuario: {}, "
+                "Recompensa: {:.2f}, "
+                "Zona: {}, "
+                "URL: {}".format(
+                    usuario_nombre,
+                    bloque.get('recompensa', 0),
+                    bloque.get('zona'),
+                    url or 'automatica'
+                )
             )
             try:
                 ceo = get_ceo_instance()
@@ -5172,6 +5175,70 @@ if HAS_FLASK and app is not None:
                 pass
         return jsonify(datos)
 
+    # ========== ENDPOINT BLUETOOTH CON ESTADO REAL DEL CELULAR ==========
+    @app.route('/api/bluetooth/scan', methods=['POST', 'OPTIONS'])
+    def bluetooth_scan():
+        if request.method == 'OPTIONS':
+            return '', 204
+        user_id = _get_user_id_from_request()
+        sess = get_session(user_id)
+        if not sess or not sess.symbiosis:
+            return jsonify({"success": False, "error": "Sesion o GPS no disponible"}), 503
+
+        bt_encendido = False
+        bt_nombre = "Desconocido"
+        wifi_ssid = "No conectado"
+        wifi_bssid = ""
+        devices = []
+
+        try:
+            devices = sess.symbiosis.gps.bluetooth.scan_advanced()
+            try:
+                import subprocess, json
+                result = subprocess.run(['termux-bluetooth-status'], capture_output=True, text=True, timeout=3)
+                if result.returncode == 0:
+                    data = json.loads(result.stdout)
+                    bt_encendido = data.get('enabled', False)
+                    bt_nombre = data.get('name', 'Daimon-Celular')
+            except:
+                pass
+
+            try:
+                result = subprocess.run(['termux-wifi-connectioninfo'], capture_output=True, text=True, timeout=3)
+                if result.returncode == 0:
+                    data = json.loads(result.stdout)
+                    wifi_ssid = data.get('ssid', 'No conectado')
+                    wifi_bssid = data.get('bssid', '')
+            except:
+                pass
+
+            return jsonify({
+                "success": True,
+                "devices": devices,
+                "estado_celular": {
+                    "bluetooth_encendido": bt_encendido,
+                    "bluetooth_nombre": bt_nombre,
+                    "wifi_ssid": wifi_ssid,
+                    "wifi_bssid": wifi_bssid,
+                    "dispositivos_encontrados": len(devices)
+                },
+                "mensaje": f"Escaneo completado. {len(devices)} dispositivos encontrados." if devices else "Escaneo completado. Ningún dispositivo Bluetooth cercano."
+            }), 200
+
+        except Exception as e:
+            return jsonify({
+                "success": True,
+                "devices": [],
+                "estado_celular": {
+                    "bluetooth_encendido": bt_encendido,
+                    "bluetooth_nombre": "Daimon-Celular",
+                    "wifi_ssid": wifi_ssid,
+                    "error": str(e)
+                },
+                "mensaje": "Escaneo completado con advertencias."
+            }), 200
+
+    # ========== ENDPOINT GPS ESTADO COMPLETO ==========
     @app.route('/api/gps/estado_completo')
     def gps_estado_completo():
         user_id = _get_user_id_from_request()
@@ -5180,6 +5247,23 @@ if HAS_FLASK and app is not None:
             return jsonify({"error": "GPS Symbiosis no disponible para esta sesion"}), 503
         try:
             status = sess.symbiosis.get_system_status()
+
+            # ---- AÑADIR CAMPOS PARA EL FRONTEND ----
+            if sess.symbiosis:
+                if hasattr(sess.symbiosis.gps, 'last_wifi_networks'):
+                    wifi_nets = sess.symbiosis.gps.last_wifi_networks
+                    radar = compute_wifi_radar(wifi_nets)
+                    status["wifi_radar"] = radar
+
+                loc = sess.symbiosis.get_location()
+                if loc:
+                    status["demand_predicted"] = sess.symbiosis.demand_predictor.predict(
+                        loc.latitude, loc.longitude
+                    )
+
+                status["multiplicador"] = get_total_multiplier_from_session(sess)
+            # -----------------------------------------
+
             if sess.symbiosis.rl:
                 status["rl"] = {
                     "step": sess.symbiosis.rl.step,
@@ -5188,13 +5272,12 @@ if HAS_FLASK and app is not None:
                 }
             if sess.symbiosis.gps.geofence:
                 status["geofences_stats"] = sess.symbiosis.gps.geofence.get_statistics()
+
             return jsonify(status), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-    # ============================================================
-    # MINING DEMO - HTML ESTATICO
-    # ============================================================
+    # ========== MINING DEMO - HTML ESTATICO ==========
     @app.route('/mining_demo')
     def mining_demo():
         return """<!DOCTYPE html>
@@ -5271,9 +5354,6 @@ setInterval(updateStats,3000);updateStats();checkGPSStatus();if('speechSynthesis
 </body>
 </html>"""
 
-    # ============================================================
-    # EXPORTACIONES Y FUNCIONES AUXILIARES
-    # ============================================================
     __all__ = ['app', 'HTTP_PORT', 'log', 'get_recent_logs',
                'minar_bloque_por_publicacion_controlado', 'obtener_estado_completo',
                'symbiosis', 'gps_registry']
@@ -5307,12 +5387,12 @@ setInterval(updateStats,3000);updateStats();checkGPSStatus();if('speechSynthesis
                 app.run(host="0.0.0.0", port=HTTP_PORT, debug=False, use_reloader=False, threaded=True)
             except OSError as e:
                 if "Address already in use" in str(e):
-                    log_message(f"Puerto {HTTP_PORT} ya en uso")
+                    log_message("Puerto {} ya en uso".format(HTTP_PORT))
                 else:
-                    log_message(f"Error al iniciar la interfaz: {e}")
+                    log_message("Error al iniciar la interfaz: {}".format(e))
         hilo = threading.Thread(target=_run, daemon=True, name="FrontendFlask")
         hilo.start()
-        log_message(f"Frontend iniciado en hilo (puerto {HTTP_PORT})")
+        log_message("Frontend iniciado en hilo (puerto {})".format(HTTP_PORT))
         return hilo
 
     def iniciar_limpieza_sesiones():
@@ -5325,9 +5405,10 @@ setInterval(updateStats,3000);updateStats();checkGPSStatus();if('speechSynthesis
         log_message("Limpieza de sesiones iniciada (cada 1 hora)")
 
 else:
-    # Si Flask no está disponible, mostramos un warning
     log.warning("Flask no disponible. La interfaz web no funcionara.")
-    # Definimos funciones dummy para evitar errores en otras partes
+    app = None
+    HTTP_PORT = None
+
     def iniciar_frontend_hilo():
         log.error("Flask no instalado. No se puede iniciar el frontend.")
         return None
@@ -5604,6 +5685,30 @@ def mostrar_ayuda() -> None:
   6. Teclas durante ejecucion:
      Ctrl+C  - Detener el sistema
 
+# ========== ENDPOINT BLUETOOTH SCAN ==========
+@app.route('/api/bluetooth/scan', methods=['POST', 'OPTIONS'])
+def bluetooth_scan():
+    if request.method == 'OPTIONS':
+        return '', 204
+    user_id = _get_user_id_from_request()
+    sess = get_session(user_id)
+    if not sess or not sess.symbiosis:
+        return jsonify({"success": False, "error": "Sesion o GPS no disponible"}), 503
+    try:
+        devices = sess.symbiosis.gps.bluetooth.scan_advanced()
+        # Formatear para el frontend
+        result = []
+        for d in devices[:20]:  # límite de 20 dispositivos
+            result.append({
+                "name": d.get('name', 'Desconocido'),
+                "mac": d.get('mac', ''),
+                "rssi": round(d.get('rssi', 0), 1),
+                "distance": round(d.get('distance', 0), 1)
+            })
+        return jsonify({"success": True, "devices": result}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 ======================================================================
 """)
 
@@ -5639,4 +5744,3 @@ if __name__ == "__main__":
 
     mostrar_ayuda()
     ejecutar_modo_continuo()
-    

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
-        /* ========== ESTILOS ========== */
+        /* ... (tus mismos estilos, sin cambios) ... */
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#fff;overflow:hidden;touch-action:none}
         #map{height:100vh;width:100vw;position:absolute;top:0;left:0;z-index:1;background:#1a1a2e}
@@ -77,7 +78,6 @@
         .bt-panel .device .name{color:#4d94ff}
         .bt-panel .device .mac{color:#88a}
         .bt-panel .close-bt{float:right;background:transparent;border:none;color:#ff4466;font-size:14px;cursor:pointer}
-        /* ----- Eliminado todo lo de costos (modal, estilos) ----- */
         #radarCanvas{position:absolute;bottom:20px;right:20px;width:200px;height:200px;z-index:100;border-radius:50%;border:2px solid rgba(77,148,255,0.5);background:rgba(0,0,0,0.7);pointer-events:none;display:block}
         .radar-text{text-align:center;font-size:9px;color:#4d94ff;padding:2px 0;font-family:monospace;border-top:1px solid rgba(77,148,255,0.08)}
     </style>
@@ -109,7 +109,6 @@
     <div class="details-section" id="detailsSection">
         <div class="detail-row"><span class="dl">GPS</span><span class="dv" id="gpsCoords">Esperando...</span></div>
         <div class="detail-row"><span class="dl">Multiplicador</span><span class="dv" id="multiplierValue">1.00x</span></div>
-        <!-- NUEVAS ETIQUETAS TECNICAS (reemplazando Red, Servidor, Latencia, Zona, RL Decision, Demanda, Costos) -->
         <div class="detail-row"><span class="dl">Kalman</span><span class="dv" id="kalmanValue">--%</span></div>
         <div class="detail-row"><span class="dl">DGPS</span><span class="dv" id="dgpsValue">--</span></div>
         <div class="detail-row"><span class="dl">Uptime</span><span class="dv" id="uptimeValue">--min</span></div>
@@ -122,7 +121,6 @@
         <div class="detail-row"><span class="dl">Zona</span><span class="dv" id="zonaInfo">--</span></div>
         <div class="detail-row"><span class="dl">RL Decision</span><span class="dv" id="rlDecision">--</span></div>
         <div class="detail-row"><span class="dl">Demanda</span><span class="dv" id="demandPred">--</span></div>
-        <!-- LINEA DE RADAR WIFI (texto) -->
         <div class="radar-text" id="radarText">RADAR: N:--% NE:--% E:--% SE:--% S:--% SW:--% W:--% NW:--%</div>
     </div>
     <div id="proIndicator" class="pro-indicator"><span class="pro-badge">MODO PRO ACTIVADO</span></div>
@@ -137,19 +135,14 @@
 </div>
 <!-- Toast -->
 <div class="toast" id="toast"></div>
-<!-- ELIMINADO TODO EL MODAL DE COSTOS -->
 
 <script>
 // ============================================================
 // DETECCION AUTOMATICA DEL SERVIDOR
 // ============================================================
 (function() {
-    var serverBase = location.origin;
-    if (location.port === '') {
-        serverBase = location.protocol + '//' + location.hostname + ':8080';
-    }
-    window.SERVER_BASE = serverBase;
-    console.log('[Config] SERVER_BASE:', serverBase);
+    window.SERVER_BASE = location.origin;
+    console.log('[Config] SERVER_BASE:', window.SERVER_BASE);
 })();
 
 // ============================================================
@@ -176,7 +169,7 @@
 // ============================================================
 // CONFIGURACION Y ESTADO GLOBAL
 // ============================================================
-var SERVER_BASE = window.SERVER_BASE || (location.origin + ':8080');
+var SERVER_BASE = window.SERVER_BASE || location.origin;
 var TAXI_CONFIG = {
     FARE_PER_KM: 0.25,
     FARE_PER_MIN_WAIT: 0.02,
@@ -200,6 +193,9 @@ var targetPoints = [
 ];
 var startTime = Date.now();
 
+// Variable local para recordar estado de singularidad (evita que se borre si el endpoint no lo manda)
+var singularityLocallyActive = false;
+
 // ============================================================
 // FUNCIONES AUXILIARES
 // ============================================================
@@ -211,7 +207,7 @@ function playBeep(){try{var a=new(window.AudioContext||window.webkitAudioContext
 function playRoarWithVoice(){try{var a=new(window.AudioContext||window.webkitAudioContext)();var o1=a.createOscillator();var g1=a.createGain();o1.connect(g1);g1.connect(a.destination);o1.type='sawtooth';o1.frequency.value=55;g1.gain.value=0.35;o1.start();g1.gain.exponentialRampToValueAtTime(0.001,a.currentTime+1.4);o1.stop(a.currentTime+1.4);var o2=a.createOscillator();var g2=a.createGain();o2.connect(g2);g2.connect(a.destination);o2.type='square';o2.frequency.value=75;g2.gain.value=0.15;o2.start();g2.gain.exponentialRampToValueAtTime(0.001,a.currentTime+1.1);o2.stop(a.currentTime+1.1);if(a.state==='suspended')a.resume();}catch(e){}if('speechSynthesis' in window){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance('Protocolo de Mejor Opcion Activado');u.lang='es-ES';u.rate=0.9;u.pitch=1.0;speechSynthesis.speak(u);}}
 
 // ============================================================
-// ACTIVAR SINGULARIDAD OMEGA (nuevo)
+// ACTIVAR SINGULARIDAD OMEGA (con estado local)
 // ============================================================
 function activarSingularidadOmega(){
     playBeep();
@@ -221,11 +217,12 @@ function activarSingularidadOmega(){
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({})
     }).then(function(res){return res.json();}).then(function(data){
-        if(data.mensaje){
-            addLog('OK '+data.mensaje,'pro');
+        if(data.mensaje || data.success || data.ok){
+            addLog('OK Singularidad activada','pro');
+            singularityLocallyActive = true;
             document.getElementById('singularityStatus').textContent = 'Activa';
-            showToast('SINGULARIDAD OMEGA ACTIVADA');
             document.getElementById('proIndicator').classList.add('active');
+            showToast('SINGULARIDAD OMEGA ACTIVADA');
         }
     }).catch(function(err){
         addLog('Error activando singularidad: '+err.message,'error');
@@ -476,48 +473,64 @@ function updateTaximeterUI(){
 }
 
 // ============================================================
-// OBTENER DATOS TECNICOS DEL SERVIDOR (KALMAN, DGPS, RADAR, ETC.)
+// OBTENER DATOS TECNICOS DEL SERVIDOR (MEJORADO)
 // ============================================================
 function fetchGPSSymbiosisStatus(){
     fetch(SERVER_BASE+'/api/gps/estado_completo')
     .then(function(res){if(!res.ok) throw new Error('HTTP '+res.status); return res.json();})
     .then(function(d){
+        // Mostrar en consola para depurar (abre F12 en el navegador)
+        console.log('📡 Respuesta de /api/gps/estado_completo:', d);
+        
         gpsSymbiosisOnline = true;
         var ind = document.getElementById('gpsSymbiosisIndicator');
         if(d.location && d.location.latitude){
             ind.textContent = 'GPS Symbiosis: ONLINE | RL Step: '+(d.rl?d.rl.step:0);
             ind.className = 'gps-symbiosis-indicator active';
         }
+        
+        // ----- LECTURA ROBUSTA DE CAMPOS -----
+        var gpsStats = d.gps_stats || {};
+        
         // Kalman
-        var kalman = d.gps_stats?.kalman_quality || 0;
+        var kalman = gpsStats.kalman_quality || gpsStats.kalman || 0;
         document.getElementById('kalmanValue').textContent = Math.round(kalman * 100) + '%';
+        
         // DGPS
-        var dgps = d.gps_stats?.dgps_stats?.corrections_applied || 0;
+        var dgps = (gpsStats.dgps_stats?.corrections_applied) || gpsStats.dgps_corrections || 0;
         document.getElementById('dgpsValue').textContent = dgps;
+        
         // Uptime
         var uptime = (Date.now() - startTime) / 60000;
         document.getElementById('uptimeValue').textContent = uptime.toFixed(1) + 'min';
+        
         // Ciclos
-        var ciclos = d.gps_stats?.trajectory_points || 0;
+        var ciclos = gpsStats.trajectory_points || gpsStats.ciclos || 0;
         document.getElementById('ciclosValue').textContent = ciclos;
+        
         // GPS updates
-        var gpsUpd = d.gps_stats?.gps_updates || 0;
+        var gpsUpd = gpsStats.gps_updates || gpsStats.updates || 0;
         document.getElementById('gpsUpdates').textContent = gpsUpd;
-        // Torres
-        var torres = d.gps_stats?.cell_towers_known || 0;
+        
+        // Torres (múltiples nombres alternativos)
+        var torres = gpsStats.cell_towers_known || gpsStats.cell_towers || d.cell_towers || d.torres || 0;
         document.getElementById('torresValue').textContent = torres;
+        
         // WiFi
-        var wifi = d.gps_stats?.wifi_networks_known || 0;
+        var wifi = gpsStats.wifi_networks_known || gpsStats.wifi_networks || d.wifi_networks || d.wifi || 0;
         document.getElementById('wifiValue').textContent = wifi;
-        // Distancia
-        var dist = d.gps_stats?.total_distance_m || 0;
+        
+        // Distancia (en metros)
+        var dist = gpsStats.total_distance_m || gpsStats.total_distance || 0;
         document.getElementById('distanciaValue').textContent = dist.toFixed(1) + 'm';
-        // Singularidad
-        if(d.singularidad_activa){
-            document.getElementById('singularityStatus').textContent = 'Activa';
-        } else {
-            document.getElementById('singularityStatus').textContent = 'Inactiva';
+        
+        // Singularidad: si el backend manda el campo, lo usamos; si no, mantenemos el estado local
+        if (typeof d.singularidad_activa !== 'undefined') {
+            singularityLocallyActive = d.singularidad_activa;
         }
+        document.getElementById('singularityStatus').textContent = singularityLocallyActive ? 'Activa' : 'Inactiva';
+        document.getElementById('proIndicator').classList.toggle('active', singularityLocallyActive);
+        
         // Zona
         if(d.geofences_stats && d.geofences_stats.fences){
             var zonasActivas = [];
@@ -530,24 +543,45 @@ function fetchGPSSymbiosisStatus(){
                 document.getElementById('zonaInfo').textContent = zonasActivas.join(', ');
             }
         }
+        
         // RL Decision
         if(d.rl && d.rl.weights){
             var mejorAlgo = Object.entries(d.rl.weights).reduce(function(a,b){return a[1]>b[1]?a:b;});
             document.getElementById('rlDecision').textContent = mejorAlgo[0].toUpperCase()+' ('+(mejorAlgo[1]*100).toFixed(0)+'%)';
         }
+        
         // Demanda
         if(d.demand_predicted !== undefined){
             document.getElementById('demandPred').textContent = sTF(d.demand_predicted, 2)+'x';
         }
-        // Radar WiFi (si existe en la respuesta)
-        if(d.wifi_radar && Array.isArray(d.wifi_radar) && d.wifi_radar.length === 8){
+        
+        // ----- RADAR WIFI (varios orígenes) -----
+        var radarArray = null;
+        // Intentar obtener array de 8 posiciones desde distintos campos
+        if (Array.isArray(d.wifi_radar) && d.wifi_radar.length === 8) {
+            radarArray = d.wifi_radar;
+        } else if (Array.isArray(gpsStats.wifi_radar) && gpsStats.wifi_radar.length === 8) {
+            radarArray = gpsStats.wifi_radar;
+        } else if (Array.isArray(d.radar_wifi) && d.radar_wifi.length === 8) {
+            radarArray = d.radar_wifi;
+        } else if (typeof d.wifi_radar_north !== 'undefined') {
+            // Alternativa: campos separados por sector
+            radarArray = [
+                d.wifi_radar_north || 0, d.wifi_radar_northeast || 0, d.wifi_radar_east || 0,
+                d.wifi_radar_southeast || 0, d.wifi_radar_south || 0, d.wifi_radar_southwest || 0,
+                d.wifi_radar_west || 0, d.wifi_radar_northwest || 0
+            ];
+        }
+        
+        if (radarArray) {
             var sectores = ['N','NE','E','SE','S','SW','W','NW'];
             var radarStr = 'RADAR: ';
             for(var i=0; i<8; i++){
-                radarStr += sectores[i] + ':' + (d.wifi_radar[i] || 0) + '% ';
+                radarStr += sectores[i] + ':' + (radarArray[i] || 0) + '% ';
             }
             document.getElementById('radarText').textContent = radarStr.trim();
         }
+        
         // Multiplicador
         if(d.multiplicador){
             document.getElementById('multiplierValue').textContent = sTF(d.multiplicador, 2) + 'x';
@@ -729,7 +763,6 @@ function init(){
     document.getElementById('rainBtn').onclick = toggleRainMode;
     document.getElementById('gpsStatusBtn').onclick = function(){
         fetchGPSSymbiosisStatus();
-        // Forzar actualizacion de ubicacion
         if(navigator.geolocation){
             navigator.geolocation.getCurrentPosition(function(pos){
                 updatePosition(pos);
@@ -740,12 +773,11 @@ function init(){
     };
     document.getElementById('resetBtn').onclick = resetTrip;
     document.getElementById('btScanBtn').onclick = function(){
-        activarSingularidadOmega();  // Activa singularidad
-        setTimeout(scanBluetooth, 500); // Escanea BT después de medio segundo
+        activarSingularidadOmega();  // Activa singularidad localmente si el POST funciona
+        setTimeout(scanBluetooth, 500);
     };
     document.getElementById('logToggleBtn').onclick = function(){var p=document.getElementById('logPanel');p.classList.toggle('show');};
     
-    // Inicial
     fetchGPSSymbiosisStatus();
     sendMapaData();
     if('speechSynthesis' in window) speechSynthesis.getVoices();
